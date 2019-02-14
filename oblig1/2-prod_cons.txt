@@ -1,0 +1,72 @@
+One item has been PRODUCED => 1. Buffer size is: 1
+One item has been PRODUCED => 2. Buffer size is: 2
+Buffer is full. Producer is waiting...
+One item has been CONSUMED => 1. Buffer size is: 1
+One item has been PRODUCED => 3. Buffer size is: 2
+One item has been CONSUMED => 2. Buffer size is: 1
+One item has been CONSUMED => 3. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
+One item has been PRODUCED => 4. Buffer size is: 1
+One item has been CONSUMED => 4. Buffer size is: 0
+One item has been PRODUCED => 5. Buffer size is: 1
+One item has been PRODUCED => 6. Buffer size is: 2
+One item has been CONSUMED => 5. Buffer size is: 1
+One item has been PRODUCED => 7. Buffer size is: 2
+Buffer is full. Producer is waiting...
+One item has been CONSUMED => 6. Buffer size is: 1
+One item has been PRODUCED => 8. Buffer size is: 2
+Buffer is full. Producer is waiting...
+One item has been CONSUMED => 7. Buffer size is: 1
+One item has been PRODUCED => 9. Buffer size is: 2
+One item has been CONSUMED => 8. Buffer size is: 1
+One item has been CONSUMED => 9. Buffer size is: 0
+One item has been PRODUCED => 10. Buffer size is: 1
+One item has been PRODUCED => 11. Buffer size is: 2
+Buffer is full. Producer is waiting...
+One item has been CONSUMED => 10. Buffer size is: 1
+One item has been PRODUCED => 12. Buffer size is: 2
+One item has been CONSUMED => 11. Buffer size is: 1
+One item has been CONSUMED => 12. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
+One item has been PRODUCED => 13. Buffer size is: 1
+One item has been CONSUMED => 13. Buffer size is: 0
+One item has been PRODUCED => 14. Buffer size is: 1
+One item has been PRODUCED => 15. Buffer size is: 2
+One item has been CONSUMED => 14. Buffer size is: 1
+One item has been CONSUMED => 15. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
+One item has been PRODUCED => 16. Buffer size is: 1
+One item has been CONSUMED => 16. Buffer size is: 0
+One item has been PRODUCED => 17. Buffer size is: 1
+One item has been CONSUMED => 17. Buffer size is: 0
+One item has been PRODUCED => 18. Buffer size is: 1
+One item has been CONSUMED => 18. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
+One item has been PRODUCED => 19. Buffer size is: 1
+One item has been CONSUMED => 19. Buffer size is: 0
+One item has been PRODUCED => 20. Buffer size is: 1
+One item has been CONSUMED => 20. Buffer size is: 0
+One item has been PRODUCED => 21. Buffer size is: 1
+One item has been CONSUMED => 21. Buffer size is: 0
+One item has been PRODUCED => 22. Buffer size is: 1
+One item has been PRODUCED => 23. Buffer size is: 2
+Buffer is full. Producer is waiting...
+One item has been CONSUMED => 22. Buffer size is: 1
+One item has been PRODUCED => 24. Buffer size is: 2
+One item has been CONSUMED => 23. Buffer size is: 1
+One item has been CONSUMED => 24. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
+One item has been PRODUCED => 25. Buffer size is: 1
+One item has been CONSUMED => 25. Buffer size is: 0
+One item has been PRODUCED => 26. Buffer size is: 1
+One item has been PRODUCED => 27. Buffer size is: 2
+One item has been CONSUMED => 26. Buffer size is: 1
+One item has been CONSUMED => 27. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
+One item has been PRODUCED => 28. Buffer size is: 1
+One item has been CONSUMED => 28. Buffer size is: 0
+One item has been PRODUCED => 29. Buffer size is: 1
+One item has been CONSUMED => 29. Buffer size is: 0
+One item has been PRODUCED => 30. Buffer size is: 1
+One item has been CONSUMED => 30. Buffer size is: 0
+Buffer is empty. Consumer is waiting...
