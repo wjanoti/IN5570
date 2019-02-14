@@ -8,8 +8,8 @@ const barrier <- monitor object barrierObj
 
   const c : Condition <- Condition.create
 
-  export operation enter[objectName:String]
-    stdout.putstring["A process from object " || objectName || " has entered the barrier.\n"]
+  export operation enter
+    stdout.putstring["A process has entered the barrier.\n"]
 
     % if that's the fourth process entering the barrier, notify the rest.
     if numberOfWaitingProcesses == maxProcesses then
@@ -37,22 +37,22 @@ const main <- object main
       const innerObject <- object innerObject
         const p1 <- object p1
           process
-            barrier.enter[nameof self]
+            barrier.enter
           end process
         end p1
         const p2 <- object p2
           process
-            barrier.enter[nameof self]
+            barrier.enter
           end process
         end p2
         const p3 <- object p3
           process
-            barrier.enter[nameof self]
+            barrier.enter
           end process
         end p3
         const p4 <- object p4
           process
-            barrier.enter[nameof self]
+            barrier.enter
           end process
         end p4
       end innerObject
