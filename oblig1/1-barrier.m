@@ -4,26 +4,27 @@ const barrier <- monitor object barrierObj
   const maxProcesses : Integer <- 4
 
   % variable to keep track of how many processes are currently waiting.
-  var counter : Integer <- 0
+  var numberOfWaitingProcesses : Integer <- 0
 
   const c : Condition <- Condition.create
 
   export operation enter[objectName:String]
     stdout.putstring["A process from object " || objectName || " has entered the barrier.\n"]
 
-    % notify waiting processes
-    if counter == maxProcesses then
+    % if that's the fourth process entering the barrier, notify the rest.
+    if numberOfWaitingProcesses == maxProcesses then
       loop
-        exit when counter == 0
-        counter <- counter - 1
+        exit when numberOfWaitingProcesses == 0
+        numberOfWaitingProcesses <- numberOfWaitingProcesses - 1
         signal c
         stdout.putstring["A process has been released. \n"]
       end loop
     end if
 
-    counter <- counter + 1
-    stdout.putstring["There are " || counter.asstring || " processes waiting\n"]
+    numberOfWaitingProcesses <- numberOfWaitingProcesses + 1
+    stdout.putstring["There are " || numberOfWaitingProcesses.asstring || " processes waiting\n"]
     wait c
+
   end enter
 
 end barrierObj
