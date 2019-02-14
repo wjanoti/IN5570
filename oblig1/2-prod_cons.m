@@ -7,7 +7,11 @@ const sharedBuffer <- monitor object sharedBuffer
 
   % helper function to get how many elements are in the array
   op count -> [i: Integer]
-    i <- data.upperbound + 1
+    if data.empty then
+      i <- 0
+    else
+      i <- (data.upperbound.abs - data.lowerbound.abs) + 1
+    end if
   end count
 
   export op produce[value : Integer]
@@ -23,10 +27,11 @@ const sharedBuffer <- monitor object sharedBuffer
 
   export op consume -> [i : Integer]
     if !data.empty then
-      i <- data.removeUpper
+      i <- data.removeLower
       stdout.putstring["One item has been CONSUMED => " || i.asstring || ". Buffer size is: " || self.count.asstring || "\n"]
       signal c
     else
+      stdout.putstring["Buffer is empty. Consumer is waiting...\n"]
       wait c
     end if
   end consume
