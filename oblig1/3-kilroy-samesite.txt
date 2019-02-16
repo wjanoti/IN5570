@@ -1,0 +1,12 @@
+Starting on ple44.planet-lab.eu
+4 nodes active.
+Time to visit each node: 0:000906
+Speed (nodes/second): 1103.14
+Back home.  Total time = 0:003626
+
+----
+
+ple3.planet-lab.eu (master)
+ple4.planet-lab.eu
+ple44.planet-lab.eu
+ple43.planet-lab.eu
