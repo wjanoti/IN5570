@@ -1,3 +1,4 @@
+% this is what a class looks like without using the class keyword
 const Person <- object PersonCreator
 
   const PersonType <- typeobject PersonType
