@@ -2,11 +2,12 @@ const sharedBuffer <- monitor object sharedBuffer
 
   % limit of items in the array at any given moment.
   const maxBufferSize : Integer <- 2
+  % shared data buffer
   const data <- Array.of[Integer].empty
   const c <- Condition.create
 
   % helper function to get how many elements are in the array
-  op count -> [i: Integer]
+  function count -> [i: Integer]
     if data.empty then
       i <- 0
     else
@@ -41,8 +42,8 @@ const producer <- object producer
   process
     for i : Integer <- 1 while i < 31 by i <- i + 1
        sharedBuffer.produce[i]
+       % sleep for 100ms -> 100000 microsecs, each third item produced.
         if i # 3 == 0 then
-        % sleep for 100ms -> 100000 microsecs.
         (locate self).delay[Time.create[0, 100000]]
       end if
     end for
@@ -55,6 +56,7 @@ const consumer <- object consumer
     loop
       var consumedItem : Integer <- sharedBuffer.consume
       consumedItensCount <- consumedItensCount + 1
+      % sleep 100ms each 5 itens consumed
       if consumedItensCount == 5 then
         consumedItensCount <- 0
         (locate self).delay[Time.create[0, 100000]]
