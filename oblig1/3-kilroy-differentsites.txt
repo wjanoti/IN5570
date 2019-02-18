@@ -3,10 +3,3 @@ Starting on planet-lab-node2.netgroup.uniroma2.it
 Time to visit each node: 0:029497
 Speed (nodes/second): 33.9018
 Back home.  Total time = 0:117988
-
-----
-
-ple4.planet-lab.eu (master) (Paris, France)
-planetlab1.xeno.cl.cam.ac.uk (Cambridge, UK)
-pl1.uni-rostock.de   (Rostock, Germany)
-planet-lab-node2.netgroup.uniroma2.it (Rome, Italy)
