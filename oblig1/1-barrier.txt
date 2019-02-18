@@ -5,28 +5,7 @@ There are 2 processes waiting
 A process has entered the barrier.
 There are 3 processes waiting
 A process has entered the barrier.
-There are 4 processes waiting
-A process has entered the barrier.
-A process has been released. 
-A process has been released. 
-A process has been released. 
-A process has been released. 
-There are 1 processes waiting
-A process has entered the barrier.
-There are 2 processes waiting
-A process has entered the barrier.
-There are 3 processes waiting
-A process has entered the barrier.
-There are 4 processes waiting
-A process has entered the barrier.
-A process has been released. 
-A process has been released. 
-A process has been released. 
-A process has been released. 
-There are 1 processes waiting
-A process has entered the barrier.
-There are 2 processes waiting
-A process has entered the barrier.
-There are 3 processes waiting
-A process has entered the barrier.
-There are 4 processes waiting
+Process 1 has passed the barrier. 
+Process 2 has passed the barrier. 
+Process 3 has passed the barrier. 
+Process 4 has passed the barrier. 

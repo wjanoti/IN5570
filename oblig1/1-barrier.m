@@ -18,7 +18,6 @@ const barrier <- monitor object barrierObj
         exit when currentWaitingProcesses == 0
         signal c
         currentWaitingProcesses <- currentWaitingProcesses - 1
-        stdout.putstring["A process has been released. \n"]
       end loop
       % otherwise wait for the others.
     else
@@ -35,24 +34,28 @@ const main <- object main
     const process1 <- object process1
       process
         barrier.enter
+        stdout.putstring["Process 1 has passed the barrier. \n"]
       end process
     end process1
 
     const process2 <- object process2
       process
         barrier.enter
+        stdout.putstring["Process 2 has passed the barrier. \n"]
       end process
     end process2
 
     const process3 <- object process3
       process
         barrier.enter
+        stdout.putstring["Process 3 has passed the barrier. \n"]
       end process
     end process3
 
     const process4 <- object process4
       process
         barrier.enter
+        stdout.putstring["Process 4 has passed the barrier. \n"]
       end process
     end process4
 end main
