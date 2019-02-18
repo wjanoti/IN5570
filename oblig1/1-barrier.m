@@ -31,7 +31,6 @@ end barrierObj
 
 % main program
 const main <- object main
-  process
     % processes creation.
     const process1 <- object process1
       process
@@ -56,11 +55,4 @@ const main <- object main
         barrier.enter
       end process
     end process4
-
-    const process5 <- object process5
-      process
-        barrier.enter
-      end process
-    end process5
-  end process
 end main
