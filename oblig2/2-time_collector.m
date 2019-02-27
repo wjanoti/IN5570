@@ -4,8 +4,11 @@ const TimeCollector <- object TimeCollector
     var there : Node
     var allNodes : NodeList
     var numberOfActiveNodes: Integer
-    const localTimes <- Array.of[Time].empty
-    const nodeNames <- Array.of[String].empty
+    const nodeTimeInfo <- record timeElement
+      var nodeTime : Time
+      var nodeName : String
+    end timeElement
+    const localTimes <- Array.of[nodeTimeInfo].empty
 
     home$stdout.PutString["Starting on " || home$name || "\n"]
     allNodes <- home.getActiveNodes
@@ -15,15 +18,14 @@ const TimeCollector <- object TimeCollector
     for i : Integer <- 0 while i < numberOfActiveNodes by i <- i + 1
       there <- allNodes[i]$theNode
       move TimeCollector to there
-      localTimes.addUpper[there$timeOfDay]
-      nodeNames.addUpper[there$name]
+      localTimes.addUpper[nodeTimeInfo.create[there$timeOfDay, there$name]]
     end for
 
     move TimeCollector to home
 
-    for i : Integer <- 0 while i <= nodeNames.upperbound by i <- i + 1
-      home$stdout.putstring["Node name: " || nodeNames[i] || "\n"]
-      home$stdout.putstring["Local time: " || localTimes[i].asString || "\n"]
+    for i : Integer <- 0 while i <= localTimes.upperbound by i <- i + 1
+      home$stdout.putstring["Node name: " || localTimes[i]$nodeName || "\n"]
+      home$stdout.putstring["Local time: " || localTimes[i]$nodeTime.asString || "\n"]
     end for
 
     home$stdout.PutString["Done collecting times"]
