@@ -30,32 +30,15 @@ end barrierObj
 
 % main program
 const main <- object main
-    % processes creation.
-    const process1 <- object process1
-      process
-        barrier.enter
-        stdout.putstring["Process 1 has passed the barrier. \n"]
-      end process
-    end process1
-
-    const process2 <- object process2
-      process
-        barrier.enter
-        stdout.putstring["Process 2 has passed the barrier. \n"]
-      end process
-    end process2
-
-    const process3 <- object process3
-      process
-        barrier.enter
-        stdout.putstring["Process 3 has passed the barrier. \n"]
-      end process
-    end process3
-
-    const process4 <- object process4
-      process
-        barrier.enter
-        stdout.putstring["Process 4 has passed the barrier. \n"]
-      end process
-    end process4
+    initially
+      for i : Integer <- 1 while i < 5 by i <- i + 1
+        const aProcess <- object aProcess
+          const number <- i
+          process
+            barrier.enter
+            stdout.putstring["Process " || number.asstring || " has passed the barrier. \n"]
+          end process
+        end aProcess
+      end for
+    end initially
 end main
