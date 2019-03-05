@@ -1,0 +1,13 @@
+diku_IN5570@pl1.uni-rostock.de $ emx32 -R129.16.20.70:17123 2-time_collector.x
+Emerald listening on port 16099 3ee3, epoch 21119 527f
+Starting on pl1.uni-rostock.de
+4 nodes active.
+Node name: pl1.uni-rostock.de
+Local time: Tue Mar  5 20:40:27 2019 (1551818427:476968)
+Node name: cse-yellow.cse.chalmers.se
+Local time: Tue Mar  5 20:40:27 2019 (1551818427:534460)
+Node name: planetlab1.xeno.cl.cam.ac.uk
+Local time: Tue Mar  5 20:40:27 2019 (1551818427:633702)
+Node name: ple3.planet-lab.eu
+Local time: Tue Mar  5 20:40:27 2019 (1551818427:713361)
+Done collecting times

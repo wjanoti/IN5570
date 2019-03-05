@@ -1,14 +1,18 @@
 const TimeCollector <- object TimeCollector
   process
     const home <- locate self
-    var there : Node
-    var allNodes : NodeList
-    var numberOfActiveNodes: Integer
+
+    % record to keep node name and time
     const nodeTimeInfo <- record timeElement
       var nodeTime : Time
       var nodeName : String
     end timeElement
+
     const localTimes <- Array.of[nodeTimeInfo].empty
+
+    var there : Node
+    var allNodes : NodeList
+    var numberOfActiveNodes: Integer
 
     home$stdout.PutString["Starting on " || home$name || "\n"]
     allNodes <- home.getActiveNodes
@@ -25,9 +29,9 @@ const TimeCollector <- object TimeCollector
 
     for i : Integer <- 0 while i <= localTimes.upperbound by i <- i + 1
       home$stdout.putstring["Node name: " || localTimes[i]$nodeName || "\n"]
-      home$stdout.putstring["Local time: " || localTimes[i]$nodeTime.asString || "\n"]
+      home$stdout.putstring["Local time: " || localTimes[i]$nodeTime.asdate || " (" ||  localTimes[i]$nodeTime.asString || ")\n"]
     end for
 
-    home$stdout.PutString["Done collecting times"]
+    home$stdout.PutString["Done collecting times\n"]
   end process
 end TimeCollector
