@@ -12,16 +12,16 @@ const Argument <- class Argument[ arraySize : Integer ]
   end initially
 end Argument
 
-% Object that's gonna be moved to a different node.
+% object that's gonna be moved to a different node.
 const remoteObj <- object remoteObj
-  % Operation that accesses the internal array in the argument object remotely.
+  % operation that accesses the internal array in the argument object remotely.
   export operation callRemote[arg: Argument]
-    (locate self)$stdout.PutString["The attached array in the parameter object has : " || arg.getArraySize.asstring || " elements\n"]
+    const arraySize <- arg.getArraySize
   end callRemote
 
-  % Operation that accesses the internal array in the argument object by visit.
+  % operation that accesses the internal array in the argument object locally (by visit).
   export operation callByVisit[arg: Argument, origin: Node]
-    (locate self)$stdout.PutString["The attached array in the parameter object has : " || arg.getArraySize.asstring || " elements\n"]
+    const arraySize <- arg.getArraySize
     move arg to origin
   end callByVisit
 end remoteObj
@@ -29,38 +29,47 @@ end remoteObj
 const main <- object main
   const here <- locate self
   const otherNodes <- here$activeNodes
-  const argObj <- Argument.create[10000]
+  % array sizes to be tested
+  const argArraySizes <- {50, 100, 500, 1000, 10000}
+  var argObj : Argument
   var otherNode : Node
   var starttime : Time
   var endtime : Time
 
-  % gets alive nodes (assume that there's at least one) and moves the object that we are gonna invoke there
+  % gets alive nodes (assume that there's at least one) and fixes the object that we are gonna invoke there.
   export op setUp
+    assert otherNodes.upperbound == 1
     otherNode <- otherNodes[1]$theNode
-    move remoteObj to otherNode
+    fix remoteObj at otherNode
   end setUp
 
   process
     self.setUp
 
-    % call the remote object without moving the parameter.
-    starttime <- here$timeOfDay
-    remoteObj.callRemote[argObj]
-    endtime <- here$timeOfDay
-    const removeInvocationTime <- endtime - starttime
-    const removeInvocationSeconds <- removeInvocationTime.getSeconds.asreal + (removeInvocationTime.getMicroSeconds.asreal/1000000.0)
-    stdout.putstring["Array size = " || argObj.getArraySize.asstring || "\n"]
-    stdout.putstring[" => Remote invocation: " || removeInvocationSeconds.asstring || " seconds\n"]
+    % runs every test scenario for each size of array
+    for i : Integer <- 0 while i < argArraySizes.upperbound + 1 by i <- i + 1
+      argObj <- Argument.create[argArraySizes[i]]
 
-    % call the remote object by visit
-    move argObj to otherNode
-    starttime <- here$timeOfDay
-    remoteObj.callByVisit[argObj, here]
-    endtime <- here$timeOfDay
-    const callByVisitInvocationTime <- endtime - starttime
-    const callByVisitInvocationSeconds <- (callByVisitInvocationTime.getSeconds.asreal + (callByVisitInvocationTime.getMicroSeconds.asreal/1000000.0))
-    stdout.putstring[" => Call by visit invocation: " || callByVisitInvocationSeconds.asstring || " seconds\n"]
+      stdout.putstring["\nArray size => " || argArraySizes[i].asstring || "\n"]
+      % calculate the cost of the remote call without moving the parameter.
+      starttime <- here$timeOfDay
+      remoteObj.callRemote[argObj]
+      endtime <- here$timeOfDay
+      const removeInvocationTime <- endtime - starttime
+      const removeInvocationSeconds <- removeInvocationTime.getSeconds.asreal + (removeInvocationTime.getMicroSeconds.asreal/1000000.0)
+      stdout.putstring[" => Remote invocation: " || removeInvocationSeconds.asstring || " seconds\n"]
 
-    stdout.putstring["Break-even: ~ " || ((callByVisitInvocationSeconds/removeInvocationSeconds) - 1.0).asString || " calls \n"]
+      move argObj to otherNode
+
+      % calculate the cost of the remote call by visit.
+      starttime <- here$timeOfDay
+      remoteObj.callByVisit[argObj, here]
+      endtime <- here$timeOfDay
+      const callByVisitInvocationTime <- endtime - starttime
+      const callByVisitInvocationSeconds <- (callByVisitInvocationTime.getSeconds.asreal + (callByVisitInvocationTime.getMicroSeconds.asreal/1000000.0))
+      stdout.putstring[" => Call by visit invocation: " || callByVisitInvocationSeconds.asstring || " seconds\n"]
+
+      stdout.putstring["Breaks even when number of callbacks >= " || ((callByVisitInvocationSeconds/removeInvocationSeconds) - 1.0).asString || "\n"]
+    end for
   end process
 end main
