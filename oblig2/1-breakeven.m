@@ -43,6 +43,10 @@ const main <- object main
     fix remoteObj at otherNode
   end setUp
 
+  export function timeToSeconds[ t: Time ] -> [ s : Real ]
+      s <- t.getSeconds.asreal + (t.getMicroSeconds.asreal/1000000.0)
+  end timeToSeconds
+
   process
     self.setUp
 
@@ -56,7 +60,7 @@ const main <- object main
       remoteObj.callRemote[argObj]
       endtime <- here$timeOfDay
       const removeInvocationTime <- endtime - starttime
-      const removeInvocationSeconds <- removeInvocationTime.getSeconds.asreal + (removeInvocationTime.getMicroSeconds.asreal/1000000.0)
+      const removeInvocationSeconds <-  self.timeToSeconds[removeInvocationTime]
       stdout.putstring[" => Remote invocation: " || removeInvocationSeconds.asstring || " seconds\n"]
 
       move argObj to otherNode
@@ -66,7 +70,7 @@ const main <- object main
       remoteObj.callByVisit[argObj, here]
       endtime <- here$timeOfDay
       const callByVisitInvocationTime <- endtime - starttime
-      const callByVisitInvocationSeconds <- (callByVisitInvocationTime.getSeconds.asreal + (callByVisitInvocationTime.getMicroSeconds.asreal/1000000.0))
+      const callByVisitInvocationSeconds <- self.timeToSeconds[callByVisitInvocationTime]
       stdout.putstring[" => Call by visit invocation: " || callByVisitInvocationSeconds.asstring || " seconds\n"]
 
       stdout.putstring["Breaks even when number of callbacks >= " || ((callByVisitInvocationSeconds/removeInvocationSeconds) - 1.0).asString || "\n"]
