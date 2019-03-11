@@ -38,11 +38,12 @@ const main <- object main
 
   % gets alive nodes (assume that there's at least one) and fixes the object that we are gonna invoke there.
   export op setUp
-    assert otherNodes.upperbound == 1
+    assert otherNodes.upperbound >= 1
     otherNode <- otherNodes[1]$theNode
     fix remoteObj at otherNode
   end setUp
 
+  % helper function to convert a Time object to seconds
   export function timeToSeconds[ t: Time ] -> [ s : Real ]
       s <- t.getSeconds.asreal + (t.getMicroSeconds.asreal/1000000.0)
   end timeToSeconds
@@ -50,7 +51,7 @@ const main <- object main
   process
     self.setUp
 
-    % runs every test scenario for each size of array
+    % runs every test scenario for each array size
     for i : Integer <- 0 while i < argArraySizes.upperbound + 1 by i <- i + 1
       argObj <- Argument.create[argArraySizes[i]]
 
