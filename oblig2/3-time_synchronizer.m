@@ -27,6 +27,7 @@ const TimeSynchronizer <- object TimeSynchronizer
     var nodeTime : Time
     var roundTripTime : Time
     var timeSumSeconds : Real
+    var timeSumMicroseconds : Real
     var averageTimeSeconds : Real
     var synchTime : Time
 
@@ -44,16 +45,15 @@ const TimeSynchronizer <- object TimeSynchronizer
       agent <-TimeAgent.create[]
       timeAgents.addUpper[agent]
       fix agent at aNode
-      home$stdout.putstring["Agent " || i.asstring || " is at: " || (locate agent)$name ||"\n"]
     end for
 
     loop
       begin
         timeSumSeconds <- 0.0
-        averageTimeSeconds <- 0.0
+        timeSumMicroseconds <- 0.0
         nodeTimes <- Array.of[nodeTimeInfo].empty
-        % sleep for 10s
-        home.delay[Time.create[0, 10000000]]
+        % query agents every minute
+        home.delay[Time.create[0, 15000000]]
         home$stdout.putstring["\n"]
         for i : Integer <- 0 while i < timeAgents.upperbound + 1 by i <- i + 1
           agent <- timeAgents[i]
@@ -62,21 +62,13 @@ const TimeSynchronizer <- object TimeSynchronizer
           nodeTime <- agent.getLocalTime
           requestEndTime <- home$timeOfDay
           roundTripTime <- requestStartTime - requestEndTime
-
-          % assuming the request and response times are the same, we subtract half of the RTT to account for the time it took to get the response.
-          nodeTime <- nodeTime - (roundTripTime/2)
-
+          timeSumSeconds <- timeSumSeconds + nodeTime.getSeconds.asreal
+          timeSumMicroseconds <- timeSumMicroseconds + nodeTime.getMicroSeconds.asreal
           nodeTimes.addUpper[nodeTimeInfo.create[nodeTime, agent.getNodeName]]
         end for
 
-        for i : Integer <- 0 while i < nodeTimes.upperbound + 1 by i <- i + 1
-            timeSumSeconds <- timeSumSeconds + TimeSynchronizer.timeToSeconds[nodeTimes[i]$nodeTime]
-        end for
-        home$stdout.putstring["Time sum is : " || timeSumSeconds.asstring || "\n"]
-
-        averageTimeSeconds <- timeSumSeconds/(nodeTimes.upperbound + 1).asreal
-        synchTime <- Time.create[averageTimeSeconds.asinteger, 0]
-        home$stdout.putstring["Time aver is : " || synchTime.asdate || "\n"]
+        synchTime <- Time.create[(timeSumSeconds/(nodeTimes.upperbound + 1).asreal).asinteger, (timeSumMicroseconds/(nodeTimes.upperbound + 1).asreal).asinteger]
+        home$stdout.putstring["Time aver is : " || synchTime.asDate || "\n"]
 
         unavailable
           (locate self)$stdout.putstring["Couldn't get time, node unavailable\n"]
