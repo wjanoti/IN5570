@@ -1,0 +1,43 @@
+diku_IN5570@ple3.planet-lab.eu $ emx32 -R128.232.103.201 3-time_synchronizer.x
+
+Approximate current time: Tue Mar 12 20:11:44 2019 (1552421504:307691)
+
+Node ple3.planet-lab.eu
+ - Difference to approximated time:  (1552421498:252721) = 6:054970
+
+Node planetlab1.xeno.cl.cam.ac.uk
+ - Difference to approximated time:  (1552421498:260050) = 6:047641
+
+Node pl1.uni-rostock.de
+ - Difference to approximated time:  (1552421498:300783) = 6:006908
+
+Node cse-yellow.cse.chalmers.se
+ - Difference to approximated time:  (1552421498:374242) = 5:933449
+
+Approximate current time: Tue Mar 12 20:11:44 2019 (1552421504:479273)
+
+Node ple3.planet-lab.eu
+ - Difference to approximated time:  (1552421558:424165) = -54:055108
+
+Node planetlab1.xeno.cl.cam.ac.uk
+ - Difference to approximated time:  (1552421558:431501) = -54:047772
+
+Node pl1.uni-rostock.de
+ - Difference to approximated time:  (1552421558:472252) = -54:007021
+
+Node cse-yellow.cse.chalmers.se
+ - Difference to approximated time:  (1552421558:546228) = -55:933045
+
+Approximate current time: Tue Mar 12 20:13:52 2019 (1552421632:651096)
+
+Node ple3.planet-lab.eu
+ - Difference to approximated time:  (1552421618:596110) = 14:054986
+
+Node planetlab1.xeno.cl.cam.ac.uk
+ - Difference to approximated time:  (1552421618:603480) = 14:047616
+
+Node pl1.uni-rostock.de
+ - Difference to approximated time:  (1552421618:644171) = 14:006925
+
+Node cse-yellow.cse.chalmers.se
+ - Difference to approximated time:  (1552421618:717678) = 13:933418
