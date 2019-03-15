@@ -1,8 +1,8 @@
 all:
 		compile run
 compile:
-		ec djb2.m nopester.m
+		ec djb2.m peer.m nopester.m
 run:
-		emx -U djb2.x nopester.x
+		emx -R$(host) djb2.x peer.x nopester.x
 clean:
 		rm *.x

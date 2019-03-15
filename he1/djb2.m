@@ -5,7 +5,7 @@ const hashAlgorithm <- typeobject hashAlgorithm
   function hash [ s : String ] -> [ h : Integer ]
 end hashAlgorithm
 
-const djb2 <- object djb2
+const djb2 <- immutable object djb2
   export operation hash [ s : String ] -> [ h : Integer ]
     % hash seed
     h <- 5381
