@@ -1,120 +1,4 @@
-% Type objects BEGIN
-const PeerType <- typeobject PeerType
-  operation addFile [ fileName : String ]
-  operation getFiles -> [ fileList : Array.of[FileRecord] ]
-  operation ping
-end PeerType
-
-const HashAlgorithmType <- typeobject hashAlgorithm
-  function hash [ s : String ] -> [ h : Integer ]
-end hashAlgorithm
-
-const FileRecord <- record FileRecord
-  var fileName : String
-  var fileHash : Integer
-end FileRecord
-% Type objects END
-
-% http://www.cse.yorku.ca/~oz/hash.html
-const djb2 <- object djb2
-  export operation hash [ s : String ] -> [ h : Integer ]
-    % hash seed
-    h <- 5381
-    for i : Integer <- 0 while i <= s.upperbound by i <- i + 1
-       h <- ((h * 32) + h) + s[i].ord
-    end for
-    h <- h.abs
-  end hash
-end djb2
-
-
-const NopesterServer <- object NopesterServer
-  const home <- locate self
-  var peerList : Array.of[PeerType] <- Array.of[PeerType].empty
-  var filesPeerIndex : Directory <- Directory.create
-  var fileNamesIndex : Directory <- Directory.create
-
-  export operation addPeer[ peer : PeerType ]
-    peerList.addUpper[peer]
-  end addPeer
-
-  export operation registerFile[ fileName: String, fileHash : Integer, peer : PeerType ]
-    var filePeers : Array.of[PeerType]
-    if filesPeerIndex.lookup[fileHash.asString] == nil then
-      filePeers <- Array.of[PeerType].empty
-    else
-      filePeers <- view filesPeerIndex.lookup[fileHash.asString] as Array.of[PeerType]
-    end if
-    filePeers.addUpper[peer]
-    filesPeerIndex.insert[fileHash.asString, filePeers]
-    fileNamesIndex.insert[fileHash.asString, fileName]
-  end registerFile
-
-  export operation listAvailableFiles
-    const files <- fileNamesIndex.list
-    stdout.putstring["Available files: \n"]
-    for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
-        var fileName : String <- view fileNamesIndex.lookup[files[i]] as String
-        stdout.putstring["  -> " || fileName || "\n"]
-    end for
-  end listAvailableFiles
-
-  export operation listFiles
-    const files <- filesPeerIndex.list
-    for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
-        const pList <- view filesPeerIndex.lookup[files[i]] as Array.of[PeerType]
-        var nodesNames : String <- ""
-        for j : Integer <- 0 while j <= pList.upperbound by j <- j + 1
-            nodesNames <- nodesNames || (locate pList[j])$name || " - "
-        end for
-        stdout.putstring["Hash: " || files[i] || " - File name: " || nodesNames || "\n"]
-    end for
-  end listFiles
-
-  % process that checks if a node was disconnected.
-  process
-    loop
-      for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
-        begin
-          if peerList[i] !== nil then
-            peerList[i].ping
-          end if
-          unavailable
-            peerList.setElement[i, nil]
-            stdout.putstring["A node was disconnected. There are currently " || home.getActiveNodes.upperbound.asstring || " active peer(s).\n"]
-          end unavailable
-        end
-      end for
-      home.delay[Time.create[5, 0]]
-    end loop
-  end process
-
-  initially
-    stdout.putstring["Starting nopester server...\n"]
-  end initially
-end NopesterServer
-
-
-const Peer <- class PeerClass
-    const hashImplementation <- djb2
-    attached const files <- Array.of[FileRecord].empty
-
-    export operation addFile [ fileName : String ]
-      files.addUpper[FileRecord.create[fileName, hashImplementation.hash[fileName]]]
-      NopesterServer.registerFile[fileName, hashImplementation.hash[fileName], self]
-    end addFile
-
-    export operation getFiles -> [ fileList : Array.of[FileRecord] ]
-      fileList <- files
-    end getFiles
-
-    export operation ping
-      %noop
-    end ping
-
-end PeerClass
-
-const test <- object test
+const nopester <- object nopester
   const home <- (locate self)
   var aNode : Node
   var peerObject : PeerType
@@ -128,10 +12,9 @@ const test <- object test
         peerObject <- Peer.create
         peerObject.addFile[testFiles[i]]
         fix peerObject at aNode
-        NopesterServer.addPeer[peerObject]
+        Server.addPeer[peerObject]
       end if
     end for
-  %  NopesterServer.listFiles
-    NopesterServer.listAvailableFiles
+    Server.listAvailableFiles
   end initially
-end test
+end nopester

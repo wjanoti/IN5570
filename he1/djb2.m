@@ -1,11 +1,7 @@
-export djb2
-export hashAlgorithm
+export hashImplementation
 
-const hashAlgorithm <- typeobject hashAlgorithm
-  function hash [ s : String ] -> [ h : Integer ]
-end hashAlgorithm
-
-const djb2 <- immutable object djb2
+% http://www.cse.yorku.ca/~oz/hash.html
+const hashImplementation : HashAlgorithmType <- object djb2
   export operation hash [ s : String ] -> [ h : Integer ]
     % hash seed
     h <- 5381
