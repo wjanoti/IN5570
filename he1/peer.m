@@ -21,11 +21,11 @@ const Peer <- class PeerClass [ id : String, server : ServerType ]
     end ping
 
     export operation dump
-      (locate server)$stdout.putstring["=> Peer: " || id || " @ " || (locate self)$name || "\n"]
-      (locate server)$stdout.putstring["Available files:\n"]
+      (locate server)$stdout.putstring["\n==== PEER INFO ====\n"]
+      (locate server)$stdout.putstring["\n=> Peer: " || id || " @ " || (locate self)$name || "\n"]
       var fileList : Array.of[FileRecord] <- self.getFileList
       for i : Integer <- 0 while i <= fileList.upperbound by i <- i + 1
-        (locate server)$stdout.putstring[fileList[i].getFileName || "\n"]
+        (locate server)$stdout.putstring[" - " || fileList[i].getFileName || "\n"]
       end for
     end dump
 

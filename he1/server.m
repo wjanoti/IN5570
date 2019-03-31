@@ -51,14 +51,32 @@ const Server <- object Server
   end listFiles
 
   export operation dump
-    here$stdout.putstring["==== CONNECTED PEERS ====\n"]
+    here$stdout.putstring["\n==== SERVER INFO ====\n"]
+    here$stdout.putstring["\n=> Connected peers:\n"]
     for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
       if peerList[i] !== nil then
         here$stdout.putstring[(peerList[i]).getId || " @ " || (locate peerList[i])$name || "\n"]
       end if
     end for
 
-    here$stdout.putstring["==== AVAILABLE FILES ====\n"]
+    here$stdout.putstring["\n=> File index:\n"]
+    const files <- fileNamesIndex.list
+    for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
+        var fileName : String <- view fileNamesIndex.lookup[files[i]] as String
+        here$stdout.putstring[fileName || " -> " || files[i] || "\n"]
+    end for
+
+    here$stdout.putstring["\n=> Peer index:\n"]
+    const filesPeer <- filesPeerIndex.list
+    for i : Integer <- 0 while i <= filesPeer.upperbound by i <- i + 1
+        var filePeerList : Array.of[PeerType] <- view filesPeerIndex.lookup[filesPeer[i]] as Array.of[PeerType]
+        var fileName : String <- view fileNamesIndex.lookup[filesPeer[i]] as String
+        here$stdout.putstring["File " || fileName  || " can be found in the following peers:\n"]
+        for j : Integer <- 0 while j <= filePeerList.upperbound by j <- j + 1
+          here$stdout.putstring[filePeerList[j].getId || "\n"]
+        end for
+    end for
+
     for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
       if peerList[i] !== nil then
         peerList[i].dump
