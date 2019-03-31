@@ -1,19 +1,32 @@
 export Peer
 
-const Peer <- class PeerClass
+const Peer <- class PeerClass [ id : String, server : ServerType ]
     attached const files <- Array.of[FileRecord].empty
+
+    export function getId -> [ res : String ]
+      res <- id
+    end getId
 
     export operation addFile [ fileName : String ]
       files.addUpper[FileRecord.create[fileName, hashImplementation.hash[fileName]]]
-      Server.registerFile[fileName, hashImplementation.hash[fileName], self]
+      server.registerFile[fileName, hashImplementation.hash[fileName], self]
     end addFile
 
-    export operation getFiles -> [ fileList : Array.of[FileRecord] ]
+    export operation getFileList -> [ fileList : Array.of[FileRecord] ]
       fileList <- files
-    end getFiles
+    end getFileList
 
     export operation ping
       %noop
     end ping
+
+    export operation dump
+      (locate server)$stdout.putstring["=> Peer: " || id || " @ " || (locate self)$name || "\n"]
+      (locate server)$stdout.putstring["Available files:\n"]
+      var fileList : Array.of[FileRecord] <- self.getFileList
+      for i : Integer <- 0 while i <= fileList.upperbound by i <- i + 1
+        (locate server)$stdout.putstring[fileList[i].getFileName || "\n"]
+      end for
+    end dump
 
 end PeerClass
