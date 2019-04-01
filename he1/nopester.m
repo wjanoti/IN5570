@@ -26,6 +26,6 @@ const nopester <- object nopester
         Server.addPeer[peerObject]
       end if
     end for
-    Server.dump
+    Server.getFileLocation[hashImplementation.hash["ss.mp3"]]
   end initially
 end nopester

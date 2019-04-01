@@ -3,7 +3,7 @@ export Server
 const Server <- object Server
   const here <- locate self
   % index of files by peer : fileHash -> Array.of[PeerType]
-  var filesPeerIndex : Directory <- Directory.create
+  var filePeersIndex : Directory <- Directory.create
   % index of file names : fileHash -> fileName
   var fileNamesIndex : Directory <- Directory.create
   % list of current known peers
@@ -17,39 +17,41 @@ const Server <- object Server
   export operation registerFile[ fileName: String, fileHash : Integer, peer : PeerType ]
     var filePeers : Array.of[PeerType]
 
-    if filesPeerIndex.lookup[fileHash.asString] == nil then
+    if filePeersIndex.lookup[fileHash.asString] == nil then
       filePeers <- Array.of[PeerType].empty
     else
-      filePeers <- view filesPeerIndex.lookup[fileHash.asString] as Array.of[PeerType]
+      filePeers <- view filePeersIndex.lookup[fileHash.asString] as Array.of[PeerType]
     end if
 
     % add peer to peer list
     filePeers.addUpper[peer]
     % update list of
-    filesPeerIndex.insert[fileHash.asString, filePeers]
+    filePeersIndex.insert[fileHash.asString, filePeers]
     fileNamesIndex.insert[fileHash.asString, fileName]
   end registerFile
 
-  export operation listAvailableFiles
-    const files <- fileNamesIndex.list
-    here$stdout.putstring["Available files: \n"]
-    for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
-        var fileName : String <- view fileNamesIndex.lookup[files[i]] as String
-        here$stdout.putstring["  -> " || fileName || "\n"]
+  export operation searchFilesByName [ searchTerm : String ]
+    const filesPeer <- filePeersIndex.list
+    here$stdout.putstring["\nSearch results for: '" || searchTerm || "'\n"]
+    for i : Integer <- 0 while i <= filesPeer.upperbound by i <- i + 1
+        var fileName : String <- view fileNamesIndex.lookup[filesPeer[i]] as String
+        if fileName.str[searchTerm] !== nil then
+          here$stdout.putstring[" - " || fileName  || "\n"]
+        end if
     end for
-  end listAvailableFiles
+  end searchFilesByName
 
-  export operation listFiles
-    const files <- filesPeerIndex.list
-    for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
-        const pList <- view filesPeerIndex.lookup[files[i]] as Array.of[PeerType]
-        var nodesNames : String <- ""
-        for j : Integer <- 0 while j <= pList.upperbound by j <- j + 1
-            nodesNames <- nodesNames || (locate pList[j])$name || " - "
-        end for
-        here$stdout.putstring["Hash: " || files[i] || " - File name: " || nodesNames || "\n"]
-    end for
-  end listFiles
+  export operation getFileLocation [ fileHash : Integer ]
+    const filePeerList <- view filePeersIndex.lookup[fileHash.asstring] as Array.of[PeerType]
+    if filePeerList == nil then
+      here$stdout.putstring["File not found\n"]
+    else
+      for i : Integer <- 0 while i <= filePeerList.upperbound by i <- i + 1
+        here$stdout.putstring["- " || filePeerList[i].getId || "\n"]
+      end for
+    end if
+
+  end getFileLocation
 
   export operation dump
     here$stdout.putstring["\n==== SERVER INFO ====\n"]
@@ -68,9 +70,9 @@ const Server <- object Server
     end for
 
     here$stdout.putstring["\n=> Peer index:\n"]
-    const filesPeer <- filesPeerIndex.list
+    const filesPeer <- filePeersIndex.list
     for i : Integer <- 0 while i <= filesPeer.upperbound by i <- i + 1
-        var filePeerList : Array.of[PeerType] <- view filesPeerIndex.lookup[filesPeer[i]] as Array.of[PeerType]
+        var filePeerList : Array.of[PeerType] <- view filePeersIndex.lookup[filesPeer[i]] as Array.of[PeerType]
         var fileName : String <- view fileNamesIndex.lookup[filesPeer[i]] as String
         here$stdout.putstring["File " || fileName  || " can be found in the following peers: "]
         for j : Integer <- 0 while j <= filePeerList.upperbound by j <- j + 1

@@ -14,8 +14,8 @@ end PeerType
 const ServerType <- typeobject ServerType
   operation addPeer[ peer : PeerType ]
   operation registerFile[ fileName: String, fileHash : Integer, peer : PeerType ]
-  operation listAvailableFiles
-  operation listFiles
+  operation searchFilesByName [ fileName : String ]
+  operation getFileLocation [ fileHash : Integer ]
   operation dump
 end ServerType
 
