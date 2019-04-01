@@ -2,14 +2,15 @@ export Server
 
 const Server <- object Server
   const here <- locate self
-  var peerList : Array.of[PeerType] <- Array.of[PeerType].empty
-  % file hash -> peer
+  % index of files by peer : fileHash -> Array.of[PeerType]
   var filesPeerIndex : Directory <- Directory.create
-  % file hash -> file name
+  % index of file names : fileHash -> fileName
   var fileNamesIndex : Directory <- Directory.create
+  % list of current known peers
+  var peerList : Directory <- Directory.create
 
   export operation addPeer[ peer : PeerType ]
-    peerList.addUpper[peer]
+    peerList.insert[peer.getId, peer]
   end addPeer
 
   % register a file belonging to a peer
@@ -53,13 +54,13 @@ const Server <- object Server
   export operation dump
     here$stdout.putstring["\n==== SERVER INFO ====\n"]
     here$stdout.putstring["\n=> Connected peers:\n"]
-    for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
-      if peerList[i] !== nil then
-        here$stdout.putstring[(peerList[i]).getId || " @ " || (locate peerList[i])$name || "\n"]
-      end if
+    const peerIds <- peerList.list
+    for i : Integer <- 0 while i <= peerIds.upperbound by i <- i + 1
+        var peer : PeerType <- view peerList.lookup[peerIds[i]] as PeerType
+        here$stdout.putstring[peerIds[i] || " @ " || (locate peer)$name || "\n"]
     end for
 
-    here$stdout.putstring["\n=> File index:\n"]
+    here$stdout.putstring["\n=> File names index:\n"]
     const files <- fileNamesIndex.list
     for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
         var fileName : String <- view fileNamesIndex.lookup[files[i]] as String
@@ -71,32 +72,31 @@ const Server <- object Server
     for i : Integer <- 0 while i <= filesPeer.upperbound by i <- i + 1
         var filePeerList : Array.of[PeerType] <- view filesPeerIndex.lookup[filesPeer[i]] as Array.of[PeerType]
         var fileName : String <- view fileNamesIndex.lookup[filesPeer[i]] as String
-        here$stdout.putstring["File " || fileName  || " can be found in the following peers:\n"]
+        here$stdout.putstring["File " || fileName  || " can be found in the following peers: "]
         for j : Integer <- 0 while j <= filePeerList.upperbound by j <- j + 1
-          here$stdout.putstring[filePeerList[j].getId || "\n"]
+            here$stdout.putstring[filePeerList[j].getId || " "]
         end for
+        here$stdout.putstring["\n"]
     end for
 
-    for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
-      if peerList[i] !== nil then
-        peerList[i].dump
-      end if
-    end for
+    %for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
+    %  if peerList[i] !== nil then
+    %    peerList[i].dump
+    %  end if
+    %end for
   end dump
 
   % process that checks if a node was disconnected.
   process
     loop
-      for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
+      const peerIds <- peerList.list
+      for i : Integer <- 0 while i <= peerIds.upperbound by i <- i + 1
         begin
-          if peerList[i] !== nil then
-            peerList[i].ping
-          end if
+          var peer : PeerType <- view peerList.lookup[peerIds[i]] as PeerType
+          peer.ping
           unavailable
-            peerList.setElement[i, nil]
-            here$stdout.putstring["Peer list size " || peerList.upperbound.asString || "\n"]
+            peerList.delete[peerIds[i]]
             here$stdout.putstring["A node was disconnected. There are currently " || here.getActiveNodes.upperbound.asstring || " active peer(s).\n"]
-            self.dump
           end unavailable
         end
       end for
