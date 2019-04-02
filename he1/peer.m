@@ -7,8 +7,8 @@ const Peer <- class PeerClass [ id : String, server : ServerType ]
       res <- id
     end getId
 
-    export operation addFile [ fileName : String ]
-      files.addUpper[FileRecord.create[fileName, hashImplementation.hash[fileName]]]
+    export operation addFile [ fileName : String, fileContents: String ]
+      files.addUpper[FileRecord.create[fileName, fileContents, hashImplementation.hash[fileName]]]
       server.registerFile[fileName, hashImplementation.hash[fileName], self]
     end addFile
 
@@ -21,11 +21,12 @@ const Peer <- class PeerClass [ id : String, server : ServerType ]
     end ping
 
     export operation dump
+      (locate server)$stdout.putstring["SERVER IS AT:" || (locate server)$name || "\n"]
       (locate server)$stdout.putstring["\n==== PEER INFO ====\n"]
       (locate server)$stdout.putstring["\n=> Peer: " || id || " @ " || (locate self)$name || "\n"]
       var fileList : Array.of[FileRecord] <- self.getFileList
       for i : Integer <- 0 while i <= fileList.upperbound by i <- i + 1
-        (locate server)$stdout.putstring[" - " || fileList[i].getFileName || "\n"]
+        (locate server)$stdout.putstring[" - " || fileList[i].getFileName || "-" || fileList[i].getFileContents || "\n"]
       end for
     end dump
 

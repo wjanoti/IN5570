@@ -81,11 +81,12 @@ const Server <- object Server
         here$stdout.putstring["\n"]
     end for
 
-    %for i : Integer <- 0 while i <= peerList.upperbound by i <- i + 1
-    %  if peerList[i] !== nil then
-    %    peerList[i].dump
-    %  end if
-    %end for
+    const peers <- peerList.list
+    for i : Integer <- 0 while i <= peers.upperbound by i <- i + 1
+        var peer : PeerType <- view peerList.lookup[peers[i]] as PeerType
+        peer.dump
+        here$stdout.putstring["\n"]
+    end for
   end dump
 
   % process that checks if a node was disconnected.
@@ -107,7 +108,9 @@ const Server <- object Server
   end process
 
   initially
+    here$stdout.putstring["SERVER:" || (locate self)$name || "\n"]
     fix self at here
+    here$stdout.putstring["SERVER:" || (locate self)$name || "\n"]
     here$stdout.putstring["Starting nopester server...\n"]
   end initially
 end Server

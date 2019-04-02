@@ -5,7 +5,7 @@ export ServerType
 
 const PeerType <- typeobject PeerType
   operation getId -> [ id : String ]
-  operation addFile [ fileName : String ]
+  operation addFile [ fileName : String, fileContents : String ]
   operation getFileList -> [ fileList : Array.of[FileRecord] ]
   operation ping
   operation dump
@@ -25,5 +25,6 @@ end hashAlgorithm
 
 const FileRecord <- record FileRecord
   var fileName : String
+  var fileContents : String
   var fileHash : Integer
 end FileRecord

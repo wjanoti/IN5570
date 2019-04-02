@@ -3,29 +3,34 @@ const nopester <- object nopester
   var aNode : Node
   var peerObject : PeerType
   const activeNodes <- (locate self).getActiveNodes
-  const p1Files : ImmutableVector.of[String] <- { "file1.mp3", "file2.mp3", "file3.mp3", "file4.mp3", "file5.mp3" }
-  const p2Files : ImmutableVector.of[String] <- { "file6.mp3", "file7.mp3", "file8.mp3", "file9.mp3", "file5.mp3" }
+  const peers <- Array.of[PeerType].empty
+
+  operation createPeers [ numberOfPeers : Integer, numberOfFiles : Integer ]
+    for i : Integer <- 1 while i <= numberOfPeers by i <- i + 1
+      peerObject <- Peer.create["p"||i.asstring, Server ]
+      for j : Integer <- 1 while j <= numberOfFiles by j <- j + 1
+        if j == 1 then
+          peerObject.addFile["p" || i.asstring || "f" || j.asstring, "asd"]
+        else
+          peerObject.addFile["p" || i.asstring || "f" || j.asstring, here.getTimeOfDay.asstring]
+        end if
+      end for
+      peers.addUpper[peerObject]
+    end for
+  end createPeers
 
   initially
     fix Server at here
     % creates and distributes peer objects into the available nodes
+    self.createPeers[activeNodes.upperbound, 5]
     for i : Integer <- 0 while i <= activeNodes.upperbound by i <- i + 1
       aNode <- activeNodes[i].getTheNode
       if aNode !== here then
-        peerObject <- Peer.create["p"||i.asstring, Server ]
-        var files : ImmutableVector.of[String]
-        if i = 1 then
-          files <- p1Files
-        else
-          files <- p2Files
-        end if
-        for j : Integer <- 0 while j <= files.upperbound by j <- j + 1
-            peerObject.addFile[files[j]]
-        end for
+        peerObject <- peers.removeUpper
         fix peerObject at aNode
         Server.addPeer[peerObject]
       end if
     end for
-    Server.getFileLocation[hashImplementation.hash["ss.mp3"]]
+    Server.dump
   end initially
 end nopester
