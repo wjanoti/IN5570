@@ -1,30 +1,25 @@
 export PeerType
 export HashAlgorithmType
-export FileRecord
 export ServerType
 
 const PeerType <- typeobject PeerType
   operation getId -> [ id : String ]
   operation addFile [ fileName : String, fileContents : String ]
-  operation getFileList -> [ fileList : Array.of[FileRecord] ]
+  operation getFileByName [ fileName : String ]-> [ file : String ]
+  operation searchFileByName [ fileName : String ] -> [ peers : Array.of[PeerType] ]
   operation ping
   operation dump
 end PeerType
 
 const ServerType <- typeobject ServerType
-  operation addPeer[ peer : PeerType ]
-  operation registerFile[ fileName: String, fileHash : Integer, peer : PeerType ]
-  operation searchFilesByName [ fileName : String ]
-  operation getFileLocation [ fileHash : Integer ]
+  operation addPeer [ peer : PeerType ]
+  operation registerFile [ fileName: String, fileHash : Integer, peer : PeerType ]
+  operation searchFileByName [ fileName : String ]  -> [ peers : Array.of[PeerType] ]
+  operation locateFileByHash  [ fileHash : Integer ]
+  operation updateFile [ fileHash : Integer, peer : PeerType, fileName: String ]
   operation dump
 end ServerType
 
 const HashAlgorithmType <- typeobject hashAlgorithm
   function hash [ s : String ] -> [ h : Integer ]
 end hashAlgorithm
-
-const FileRecord <- record FileRecord
-  var fileName : String
-  var fileContents : String
-  var fileHash : Integer
-end FileRecord
