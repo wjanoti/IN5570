@@ -171,13 +171,10 @@ const Server <- object Server
             here$stdout.putstring["A node was disconnected. There are currently " || (peerList.list.upperbound + 1).asString || " active peer(s).\n"]
           end unavailable
         end
+
       end for
       here.delay[Time.create[5, 0]]
     end loop
   end process
 
-  initially
-    % fix the server object on the starting node
-    fix self at here
-  end initially
 end Server

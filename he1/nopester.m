@@ -104,12 +104,12 @@ const nopester <- object nopester
   end testDownloadFileAvailableInMultiplePeers
 
   export operation testPeerRemovesFile
-    stdout.putstring["\nTest case 3 - peer notifies that file is no longer available\n"]
+    stdout.putstring["\nTest case 3: peer notifies that file is no longer available\n"]
     p4.removeFile["p4f2"]
   end testPeerRemovesFile
 
   export operation testPeerUpdatesFile
-    stdout.putstring["\nTest case 4 - peer updates a file\n"]
+    stdout.putstring["\nTest case 4: peer updates a file\n"]
     p2.updateFile["p2f1", "p2f1.updated"]
   end testPeerUpdatesFile
 
@@ -127,13 +127,18 @@ const nopester <- object nopester
   end initially
 
   process
+    % dumps initial state
     server.dump
-    %self.testDownloadFileAvailableInSinglePeer
-    %server.dump
-    %self.testDownloadFileAvailableInMultiplePeers
-    %server.dump
-    %self.testPeerRemovesFile
-    %server.dump
+
+    self.testDownloadFileAvailableInSinglePeer
+    server.dump
+
+    self.testDownloadFileAvailableInMultiplePeers
+    server.dump
+
+    self.testPeerRemovesFile
+    server.dump
+
     self.testPeerUpdatesFile
     server.dump
   end process
