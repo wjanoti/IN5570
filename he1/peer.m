@@ -14,14 +14,14 @@ const Peer <- class PeerClass [ id : String, server : ServerType ]
       server.registerFile[fileName, fileContentsHash, self]
     end addFile
 
-    % let the server know that the file is no longer available
+    % lets the server know that the file is no longer available
     export operation removeFile [ fileName : String ]
       const fileContents <- view files.lookup[fileName] as String
       files.delete[fileName]
       server.deregisterFile[fileName, hashImplementation.hash[fileContents], self]
     end removeFile
 
-    % let the server know that the file is no longer available
+    % updates a file name
     export operation updateFile [ oldFileName : String, newFileName : String ]
       const fileContents <- view files.lookup[oldFileName] as String
       files.delete[oldFileName]
@@ -29,7 +29,7 @@ const Peer <- class PeerClass [ id : String, server : ServerType ]
       server.updateFile[oldFileName, newFileName, hashImplementation.hash[fileContents], self]
     end updateFile
 
-    % delivers a file from the peer
+    % delivers a file
     export operation getFileByName [ fileName : String ] -> [ file : String ]
       file <- view files.lookup[fileName] as String
     end getFileByName
