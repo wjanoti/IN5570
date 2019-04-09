@@ -38,7 +38,7 @@ const Server <- object Server
     fileNamesIndex.insert[fileHash.asString, fileNames]
   end registerFile
 
-  export operation updateFile[ fileName : String, fileHash : Integer, peer : PeerType ]
+  export operation deregisterFile[ fileName : String, fileHash : Integer, peer : PeerType ]
     var filePeers : Array.of[PeerType]
     var fileNames : Array.of[String]
     var updatedFileNames : Array.of[String] <- Array.of[String].empty
@@ -67,12 +67,30 @@ const Server <- object Server
       end for
       filePeersIndex.insert[fileHash.asString, updatedFilePeers]
     end if
+  end deregisterFile
+
+  export operation updateFile[ oldFileName: String, newFileName : String, fileHash : Integer, peer : PeerType ]
+    var filePeers : Array.of[PeerType]
+    var fileNames : Array.of[String]
+    var updatedFileNames : Array.of[String] <- Array.of[String].empty
+    var updatedFilePeers : Array.of[PeerType] <- Array.of[PeerType].empty
+
+    fileNames <- view fileNamesIndex.lookup[fileHash.asString] as Array.of[String]
+    if fileNames !== nil then
+      for i : Integer <- 0 while i <= fileNames.upperbound by i <- i + 1
+        if fileNames[i] == oldFileName then
+            updatedFileNames.addUpper[newFileName]
+        else
+           updatedFileNames.addUpper[fileNames[i]]
+        end if
+      end for
+      fileNamesIndex.insert[fileHash.asString, updatedFileNames]
+    end if
   end updateFile
 
   % searchs for a file by name and return a list of peers that have that file
   export operation searchFileByName [ searchTerm : String ] -> [ peers : Array.of[PeerType] ]
     const fileHashes <- fileNamesIndex.list
-    here$stdout.putstring["\nSearching for: '" || searchTerm || "'\n"]
     for i : Integer <- 0 while i <= fileHashes.upperbound by i <- i + 1
         var fileNames :  Array.of[String] <- view fileNamesIndex.lookup[fileHashes[i]] as Array.of[String]
         for j : Integer <- 0 while j <= fileNames.upperbound by j <- j + 1
@@ -86,7 +104,7 @@ const Server <- object Server
 
   % prints system state, server indexes and peers info
   export operation dump
-    here$stdout.putstring["\n==== SERVER INFO ====\n"]
+    here$stdout.putstring["\n==== GLOBAL STATE BEGIN ====\n"]
     here$stdout.putstring["\n=> Connected peers:\n"]
     const peerIds <- peerList.list
     for i : Integer <- 0 while i <= peerIds.upperbound by i <- i + 1
@@ -127,7 +145,6 @@ const Server <- object Server
     end for
 
     const peers <- peerList.list
-    (locate server)$stdout.putstring["\n==== PEERS INFO ====\n"]
     for i : Integer <- 0 while i <= peers.upperbound by i <- i + 1
         begin
           var peer : PeerType <- view peerList.lookup[peers[i]] as PeerType
@@ -138,6 +155,7 @@ const Server <- object Server
           end unavailable
         end
     end for
+    here$stdout.putstring["\n==== GLOBAL STATE END ====\n"]
   end dump
 
   % process that checks every 5 seconds if a node has been disconnected.

@@ -69,8 +69,8 @@ const nopester <- object nopester
   end setup
 
   % p1 downloads a file (p4f1) from p4 and saves it under p4f1.downloaded
-  export operation testDownloadFileFromPeer
-    stdout.putstring["Test case 1: download a file from a peer on a different node\n"]
+  export operation testDownloadFileAvailableInSinglePeer
+    stdout.putstring["\nTest case 1: download a file available in a single peer\n"]
     const fileName <- "p4f1"
     const availablePeers <- p1.searchFileByName[fileName]
     for i : Integer <- 0 while i <= availablePeers.upperbound by i <- i + 1
@@ -84,12 +84,34 @@ const nopester <- object nopester
         end unavailable
       end
     end for
-  end testDownloadFileFromPeer
+  end testDownloadFileAvailableInSinglePeer
 
-  export operation testUpdateFile
-    stdout.putstring["Test case 2 - peer update file on server \n Peer 4 removes file 'p4f2'"]
+  export operation testDownloadFileAvailableInMultiplePeers
+    stdout.putstring["\nTest case 2: download a file that is available in multiple peers\n"]
+    const fileName <- "p3f0"
+    const availablePeers <- p1.searchFileByName[fileName]
+    for i : Integer <- 0 while i <= availablePeers.upperbound by i <- i + 1
+      begin
+        const downloadFileContent <- availablePeers[i].getFileByName[fileName]
+        if downloadFileContent !== nil then
+          p1.addFile[fileName || ".downloaded", downloadFileContent]
+        end if
+        unavailable
+          stdout.putstring["Couldn't download file from peer\n"]
+        end unavailable
+      end
+    end for
+  end testDownloadFileAvailableInMultiplePeers
+
+  export operation testPeerRemovesFile
+    stdout.putstring["\nTest case 3 - peer notifies that file is no longer available\n"]
     p4.removeFile["p4f2"]
-  end testUpdateFile
+  end testPeerRemovesFile
+
+  export operation testPeerUpdatesFile
+    stdout.putstring["\nTest case 4 - peer updates a file\n"]
+    p2.updateFile["p2f1", "p2f1.updated"]
+  end testPeerUpdatesFile
 
   initially
     loop
@@ -102,14 +124,17 @@ const nopester <- object nopester
     end loop
     % creates peers and adds files
     self.setup
-    Server.dump
   end initially
 
   process
-    self.testDownloadFileFromPeer
     server.dump
-
-    self.testUpdateFile
+    %self.testDownloadFileAvailableInSinglePeer
+    %server.dump
+    %self.testDownloadFileAvailableInMultiplePeers
+    %server.dump
+    %self.testPeerRemovesFile
+    %server.dump
+    self.testPeerUpdatesFile
     server.dump
   end process
 end nopester

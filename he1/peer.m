@@ -18,8 +18,16 @@ const Peer <- class PeerClass [ id : String, server : ServerType ]
     export operation removeFile [ fileName : String ]
       const fileContents <- view files.lookup[fileName] as String
       files.delete[fileName]
-      server.updateFile[fileName, hashImplementation.hash[fileContents], self]
+      server.deregisterFile[fileName, hashImplementation.hash[fileContents], self]
     end removeFile
+
+    % let the server know that the file is no longer available
+    export operation updateFile [ oldFileName : String, newFileName : String ]
+      const fileContents <- view files.lookup[oldFileName] as String
+      files.delete[oldFileName]
+      files.insert[newFileName, fileContents]
+      server.updateFile[oldFileName, newFileName, hashImplementation.hash[fileContents], self]
+    end updateFile
 
     % delivers a file from the peer
     export operation getFileByName [ fileName : String ] -> [ file : String ]

@@ -8,6 +8,7 @@ const PeerType <- typeobject PeerType
   operation removeFile [ fileName : String ]
   operation getFileByName [ fileName : String ]-> [ file : String ]
   operation searchFileByName [ fileName : String ] -> [ peers : Array.of[PeerType] ]
+  operation updateFile [ oldFileName : String, newFileName : String ]
   operation ping
   operation dump
 end PeerType
@@ -16,7 +17,8 @@ const ServerType <- typeobject ServerType
   operation addPeer [ peer : PeerType ]
   operation registerFile [ fileName: String, fileHash : Integer, peer : PeerType ]
   operation searchFileByName [ fileName : String ]  -> [ peers : Array.of[PeerType] ]
-  operation updateFile[ fileName: String, fileHash : Integer, peer : PeerType ]
+  operation deregisterFile[ fileName: String, fileHash : Integer, peer : PeerType ]
+  operation updateFile[ oldFileName: String, newFileName: String, fileHash : Integer, peer : PeerType ]
   operation dump
 end ServerType
 
