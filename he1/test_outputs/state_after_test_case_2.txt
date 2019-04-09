@@ -1,0 +1,68 @@
+Test case 2: download a file that is available in multiple peers
+
+==== GLOBAL STATE BEGIN ====
+
+=> Connected peers:
+p1 @ planetlab1.xeno.cl.cam.ac.uk
+p2 @ planetlab1.xeno.cl.cam.ac.uk
+p3 @ planetlab1.xeno.cl.cam.ac.uk
+p4 @ mars.planetlab.haw-hamburg.de
+p5 @ mars.planetlab.haw-hamburg.de
+
+=> File/Names index:
+1065298983 -> p4f2 p5f1
+1231369287 -> p2f1
+140354838 -> p3f2 p4f0
+14828338 -> p5f2
+1642649056 -> p1f2 p2f0
+1669671649 -> p3f1
+18172745 -> p2f2 p3f0 p3f0.downloaded
+1827722871 -> p1f1
+336239621 -> p1f0
+38282865 -> p4f1 p5f0 p4f1.downloaded
+
+=> Files/Peers index:
+1065298983 ->  p4 @ mars.planetlab.haw-hamburg.de  p5 @ mars.planetlab.haw-hamburg.de
+1231369287 ->  p2 @ planetlab1.xeno.cl.cam.ac.uk
+140354838 ->  p3 @ planetlab1.xeno.cl.cam.ac.uk  p4 @ mars.planetlab.haw-hamburg.de
+14828338 ->  p5 @ mars.planetlab.haw-hamburg.de
+1642649056 ->  p1 @ planetlab1.xeno.cl.cam.ac.uk  p2 @ planetlab1.xeno.cl.cam.ac.uk
+1669671649 ->  p3 @ planetlab1.xeno.cl.cam.ac.uk
+18172745 ->  p2 @ planetlab1.xeno.cl.cam.ac.uk  p3 @ planetlab1.xeno.cl.cam.ac.uk  p1 @ planetlab1.xeno.cl.cam.ac.uk
+1827722871 ->  p1 @ planetlab1.xeno.cl.cam.ac.uk
+336239621 ->  p1 @ planetlab1.xeno.cl.cam.ac.uk
+38282865 ->  p4 @ mars.planetlab.haw-hamburg.de  p5 @ mars.planetlab.haw-hamburg.de  p1 @ planetlab1.xeno.cl.cam.ac.uk
+
+=> Peer: p1 @ planetlab1.xeno.cl.cam.ac.uk
+ - p1f0 -> Quick zephyrs blow vexing daft Jim
+ - p1f1 -> Sphinx of black quartz judge my vow
+ - p1f2 -> Hick dwarves jam blitzing foxy quip
+ - p3f0.downloaded -> My jocks box get hard unzip quiver flow
+ - p4f1.downloaded -> Five quacking zephyrs jolt my wax bed
+
+
+=> Peer: p2 @ planetlab1.xeno.cl.cam.ac.uk
+ - p2f0 -> Hick dwarves jam blitzing foxy quip
+ - p2f1 -> Vamp fox held quartz duck just by wing
+ - p2f2 -> My jocks box get hard unzip quiver flow
+
+
+=> Peer: p3 @ planetlab1.xeno.cl.cam.ac.uk
+ - p3f0 -> My jocks box get hard unzip quiver flow
+ - p3f1 -> Kvetching flummoxed by job W. zaps Iraq
+ - p3f2 -> Two driven jocks help fax my big quiz
+
+
+=> Peer: p4 @ mars.planetlab.haw-hamburg.de
+ - p4f0 -> Two driven jocks help fax my big quiz
+ - p4f1 -> Five quacking zephyrs jolt my wax bed
+ - p4f2 -> The five boxing wizards jump quickly
+
+
+=> Peer: p5 @ mars.planetlab.haw-hamburg.de
+ - p5f0 -> Five quacking zephyrs jolt my wax bed
+ - p5f1 -> The five boxing wizards jump quickly
+ - p5f2 -> Pack my box with five dozen liquor jugs
+
+
+==== GLOBAL STATE END ====
