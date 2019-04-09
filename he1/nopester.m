@@ -4,7 +4,7 @@ const nopester <- object nopester
   var aPeer : PeerType
   var peerObject : PeerType
   var p1, p2, p3, p4, p5 : PeerType
-  const activeNodes <- (locate self).getActiveNodes
+  var activeNodes : NodeList <- (locate self).getActiveNodes
   const peers <- Array.of[PeerType].empty
   const testFiles  <- {
     "Quick zephyrs blow vexing daft Jim",
@@ -43,11 +43,12 @@ const nopester <- object nopester
     p5 <- self.createPeer["p5", testFiles.getSlice[7, 3]]
     peers.addUpper[p5]
 
-    % distribute the peers among the nodes
+    % distribute the peers among the nodes, we assume that there are 3 nodes running (1 for the server and 2 for the peers)
     for i : Integer <- 0 while i <= activeNodes.upperbound by i <- i + 1
       aNode <- activeNodes[i].getTheNode
       % we consider the node we run this program the server and don't want any peer objects here.
       if aNode !== here then
+        %  partition peers over 2 nodes (3 in one and 2 in the other)
         if i == 1 then
           loop
             exit when peers.upperbound == 2
@@ -67,21 +68,48 @@ const nopester <- object nopester
     end for
   end setup
 
-  initially
-    self.setup
-    %const possiblePeers <- p2.searchFileByName["p1f1"]
-    %for i : Integer <- 0 while i <= possiblePeers.upperbound by i <- i + 1
-    %  begin
-    %    const downloadedFile <- possiblePeers[i].getFileByName["p1f1"]
-    %    if downloadedFile !== nil  then
-    %      p2.addFile["p1f1.downloaded", downloadedFile]
-    %    end if
-    %    unavailable
-    %      stdout.putstring["Couldn't get file from peer\n"]
-    %    end unavailable
-    %  end
-    %end for
+  % p1 downloads a file (p4f1) from p4 and saves it under p4f1.downloaded
+  export operation testDownloadFileFromPeer
+    stdout.putstring["Test case 1: download a file from a peer on a different node\n"]
+    const fileName <- "p4f1"
+    const availablePeers <- p1.searchFileByName[fileName]
+    for i : Integer <- 0 while i <= availablePeers.upperbound by i <- i + 1
+      begin
+        const downloadFileContent <- availablePeers[i].getFileByName[fileName]
+        if downloadFileContent !== nil then
+          p1.addFile[fileName || ".downloaded", downloadFileContent]
+        end if
+        unavailable
+          stdout.putstring["Couldn't download file from peer\n"]
+        end unavailable
+      end
+    end for
+  end testDownloadFileFromPeer
 
-    %Server.dump
+  export operation testUpdateFile
+    stdout.putstring["Test case 2 - peer update file on server \n Peer 4 removes file 'p4f2'"]
+    p4.removeFile["p4f2"]
+  end testUpdateFile
+
+  initially
+    loop
+      exit when activeNodes.upperbound = 2
+      activeNodes <- here.getActiveNodes
+      if activeNodes.upperbound < 2 then
+        stdout.putstring["There neeeds to be at least 3 active nodes to run this program, waiting for a node to connect...\n"]
+        here.delay[Time.create[3, 0]]
+      end if
+    end loop
+    % creates peers and adds files
+    self.setup
+    Server.dump
   end initially
+
+  process
+    self.testDownloadFileFromPeer
+    server.dump
+
+    self.testUpdateFile
+    server.dump
+  end process
 end nopester

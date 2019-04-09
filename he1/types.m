@@ -5,6 +5,7 @@ export ServerType
 const PeerType <- typeobject PeerType
   operation getId -> [ id : String ]
   operation addFile [ fileName : String, fileContents : String ]
+  operation removeFile [ fileName : String ]
   operation getFileByName [ fileName : String ]-> [ file : String ]
   operation searchFileByName [ fileName : String ] -> [ peers : Array.of[PeerType] ]
   operation ping
@@ -15,8 +16,7 @@ const ServerType <- typeobject ServerType
   operation addPeer [ peer : PeerType ]
   operation registerFile [ fileName: String, fileHash : Integer, peer : PeerType ]
   operation searchFileByName [ fileName : String ]  -> [ peers : Array.of[PeerType] ]
-  operation locateFileByHash  [ fileHash : Integer ]
-  operation updateFile [ fileHash : Integer, peer : PeerType, fileName: String ]
+  operation updateFile[ fileName: String, fileHash : Integer, peer : PeerType ]
   operation dump
 end ServerType
 

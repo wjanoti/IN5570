@@ -38,6 +38,37 @@ const Server <- object Server
     fileNamesIndex.insert[fileHash.asString, fileNames]
   end registerFile
 
+  export operation updateFile[ fileName : String, fileHash : Integer, peer : PeerType ]
+    var filePeers : Array.of[PeerType]
+    var fileNames : Array.of[String]
+    var updatedFileNames : Array.of[String] <- Array.of[String].empty
+    var updatedFilePeers : Array.of[PeerType] <- Array.of[PeerType].empty
+
+    fileNames <- view fileNamesIndex.lookup[fileHash.asString] as Array.of[String]
+    if fileNames !== nil then
+      % convoluted way to remove an element from the array
+      % I just copy everyone except the one I want to remove to a new one.
+      for i : Integer <- 0 while i <= fileNames.upperbound by i <- i + 1
+        if fileNames[i] != fileName then
+            updatedFileNames.addUpper[fileNames[i]]
+        end if
+      end for
+      fileNamesIndex.insert[fileHash.asString, updatedFileNames]
+    end if
+
+    filePeers <- view filePeersIndex.lookup[fileHash.asString] as Array.of[PeerType]
+    if filePeers !== nil then
+      % convoluted way to remove an element from the array
+      % I just copy everyone except the one I want to remove to a new one.
+      for i : Integer <- 0 while i <= filePeers.upperbound by i <- i + 1
+        if filePeers[i] !== peer  then
+            updatedFilePeers.addUpper[filePeers[i]]
+        end if
+      end for
+      filePeersIndex.insert[fileHash.asString, updatedFilePeers]
+    end if
+  end updateFile
+
   % searchs for a file by name and return a list of peers that have that file
   export operation searchFileByName [ searchTerm : String ] -> [ peers : Array.of[PeerType] ]
     const fileHashes <- fileNamesIndex.list
@@ -53,16 +84,7 @@ const Server <- object Server
     end for
   end searchFileByName
 
-  % searchs for a file by hash and return a list of peers that have that file
-  export operation locateFileByHash [ fileHash : Integer ] -> [ peers : Array.of[PeerType] ]
-    peers <- view filePeersIndex.lookup[fileHash.asstring] as Array.of[PeerType]
-  end locateFileByHash
-
-  export operation updateFile [ fileHash : Integer, peer : PeerType, fileName: String ]
-    % TODO
-  end updateFile
-
-  % prints server state
+  % prints system state, server indexes and peers info
   export operation dump
     here$stdout.putstring["\n==== SERVER INFO ====\n"]
     here$stdout.putstring["\n=> Connected peers:\n"]
@@ -77,7 +99,7 @@ const Server <- object Server
         end
     end for
 
-    here$stdout.putstring["\n=> File names index:\n"]
+    here$stdout.putstring["\n=> File/Names index:\n"]
     const files <- fileNamesIndex.list
     for i : Integer <- 0 while i <= files.upperbound by i <- i + 1
         var fileNames : Array.of[String] <- view fileNamesIndex.lookup[files[i]] as Array.of[String]
@@ -88,17 +110,17 @@ const Server <- object Server
         here$stdout.putstring["\n"]
     end for
 
-    here$stdout.putstring["\n=> Files by Peer index:\n"]
-    const filesPeer <- filePeersIndex.list
-    for i : Integer <- 0 while i <= filesPeer.upperbound by i <- i + 1
-        var filePeerList : Array.of[PeerType] <- view filePeersIndex.lookup[filesPeer[i]] as Array.of[PeerType]
-        here$stdout.putstring[filesPeer[i] || " -> "]
+    here$stdout.putstring["\n=> Files/Peers index:\n"]
+    const hashList <- filePeersIndex.list
+    for i : Integer <- 0 while i <= hashList.upperbound by i <- i + 1
+        var filePeerList : Array.of[PeerType] <- view filePeersIndex.lookup[hashList[i]] as Array.of[PeerType]
+        here$stdout.putstring[hashList[i] || " -> "]
         for j : Integer <- 0 while j <= filePeerList.upperbound by j <- j + 1
             begin
-            here$stdout.putstring[" " || filePeerList[j].getId || " @ " || (locate filePeerList[j])$name || " "]
-            unavailable
-              here$stdout.putstring["Peer unavailable.\n"]
-            end unavailable
+              here$stdout.putstring[" " || filePeerList[j].getId || " @ " || (locate filePeerList[j])$name || " "]
+              unavailable
+                here$stdout.putstring["Peer unavailable.\n"]
+              end unavailable
             end
         end for
         here$stdout.putstring["\n"]
@@ -107,9 +129,14 @@ const Server <- object Server
     const peers <- peerList.list
     (locate server)$stdout.putstring["\n==== PEERS INFO ====\n"]
     for i : Integer <- 0 while i <= peers.upperbound by i <- i + 1
-        var peer : PeerType <- view peerList.lookup[peers[i]] as PeerType
-        peer.dump
-        here$stdout.putstring["\n"]
+        begin
+          var peer : PeerType <- view peerList.lookup[peers[i]] as PeerType
+          peer.dump
+          here$stdout.putstring["\n"]
+          unavailable
+            here$stdout.putstring["Peer unavailable.\n"]
+          end unavailable
+        end
     end for
   end dump
 
@@ -122,10 +149,8 @@ const Server <- object Server
           var peer : PeerType <- view peerList.lookup[peerIds[i]] as PeerType
           peer.ping
           unavailable
-            % TODO : recheck if we are cleaning everything up.
             peerList.delete[peerIds[i]]
-            here$stdout.putstring["A node was disconnected. There are currently " || here.getActiveNodes.upperbound.asstring || " active peer(s).\n"]
-            self.dump
+            here$stdout.putstring["A node was disconnected. There are currently " || (peerList.list.upperbound + 1).asString || " active peer(s).\n"]
           end unavailable
         end
       end for
@@ -134,7 +159,7 @@ const Server <- object Server
   end process
 
   initially
+    % fix the server object on the starting node
     fix self at here
-    here$stdout.putstring["Starting nopester server...\n"]
   end initially
 end Server
