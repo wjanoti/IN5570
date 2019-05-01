@@ -1,17 +1,12 @@
-export TestObjectClass
+export TestObject
 
-const TestObjectClass <- class TestObject [data : String]
-  var data : String
+const TestObject <- class TestObject [data : String]
 
-  export operation clone -> [cloned: ReplicaType]
-      cloned <- TestObjectClass.create[data]
+  export operation clone -> [cloned: ClonableType]
+      cloned <- TestObject.create[data]
   end clone
 
-  export operation read -> [ ret : Any ]
-    ret <- view data as String
-  end read
-
-  export operation write [value : Any ]
-      data <- view value as String 
-  end write
+  export operation dump
+    (locate self)$stdout.putstring["DATA: " || data || " - LOCATION :" || (locate self)$name || "\n"]
+  end dump
 end TestObject

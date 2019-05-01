@@ -1,18 +1,18 @@
-export PrimaryReplicaType
 export ReplicaType
 export PCRFrameworkType
-
-const PrimaryReplicaType <- typeobject PrimaryReplicaType
-    operation read -> [o : Any]
-    operation write[o : Any]
-    operation notify
-    operation clone -> [cloned : ReplicaType]
-end PrimaryReplicaType
+export ClonableType
 
 const ReplicaType <- typeobject ReplicaType
     operation read -> [o : Any]
     operation write[o : Any]
+    operation clone -> [o : ReplicaType]
+    operation ping
+    operation dump
 end ReplicaType
+
+const ClonableType <- typeobject ClonableType
+  operation clone -> [o : ClonableType]
+end ClonableType
 
 const PCRFrameworkType <- typeobject PCRFrameworkType
   operation replicate[X : t, N : Integer]
