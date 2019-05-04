@@ -1,7 +1,7 @@
 export PrimaryReplica
 
-const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredReplicas: Integer]
-  var replicas : Array.of[ReplicaType] <- Array.of[ReplicaType].empty
+const PrimaryReplica <- class PrimaryReplica[attached obj : ClonableType, numberRequiredReplicas: Integer]
+  var secondaryReplicas : Array.of[ReplicaType] <- Array.of[ReplicaType].empty
   var nodes : Array.of[Node] <- Array.of[Node].empty
   var home : Node <- locate self
 
@@ -25,7 +25,7 @@ const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredR
   end registerNode
 
   export operation registerReplica[newReplica : ReplicaType]
-    replicas.addUpper[newReplica]
+    secondaryReplicas.addUpper[newReplica]
   end registerReplica
 
   export operation ping
@@ -40,15 +40,18 @@ const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredR
   end notify
 
   export operation dump
-      var nodesNames : String <- ""
-      for i : Integer <- 0 while i <= nodes.upperbound by i <- i + 1
-        nodesNames <- nodesNames || nodes[i]$name || " - "
-      end for
-      home$stdout.putstring["REPLICA INFO: \n - TYPE " || (typeof self)$name ||
-                            " \n - NUMBER OF SECONDARY REPLICAS: " || (replicas.upperbound + 1).asstring ||
-                            " \n - NUMBER OF NODES:" || (nodes.upperbound + 1).asString ||
-                            " \n - NODES: " || nodesNames
-                            ]
-      obj.dump
+     for i : Integer <- 0 while i <= secondaryReplicas.upperbound by i <- i + 1
+        secondaryReplicas[i].dump
+     end for
+      %var nodesNames : String <- ""
+      %for i : Integer <- 0 while i <= nodes.upperbound by i <- i + 1
+    %    nodesNames <- nodesNames || nodes[i]$name || " - "
+    %  end for
+    %  home$stdout.putstring["REPLICA INFO: \n - TYPE " || (typeof self)$name ||
+    %                        " \n - NUMBER OF SECONDARY REPLICAS: " || (secondaryReplicas.upperbound + 1).asstring ||
+    %                        " \n - NUMBER OF NODES:" || (nodes.upperbound + 1).asString ||
+    %                        " \n - NODES: " || nodesNames || "\n"
+    %                        ]
+     %obj.dump
   end dump
 end PrimaryReplica

@@ -1,9 +1,8 @@
 const test <- object test
     initially
       const testObj <- TestObject.create["BACON"]
-      var replicas : Array.of[ReplicaType] <- PCRFramework.replicate[testObj, 2]
-      for i : Integer <- 0  while i <= replicas.upperbound by i <- i + 1
-          replicas[i].dump
-      end for
+      var replicas : Array.of[ReplicaType] <- PCRFramework.replicate[testObj, 3]
+      stdout.putstring["Created " || (replicas.upperbound + 1).asString || " replicas"]
+      replicas[0].dump
     end initially
 end test

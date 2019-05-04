@@ -37,7 +37,7 @@ const GenericReplica <- class GenericReplica[attached obj : ClonableType, primar
   end ping
 
   export operation dump
-      obj.dump
+    (locate self)$stdout.putstring["oi\n"]
   end dump
 
   initially

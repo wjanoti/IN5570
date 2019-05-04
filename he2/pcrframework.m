@@ -1,20 +1,7 @@
 export PCRFramework
 
-const TestObject <- class TestObject [data : String]
-  export operation clone -> [cloned: ClonableType]
-      cloned <- TestObject.create[data]
-  end clone
-
-  export operation dump
-    (locate self)$stdout.putstring["DATA: " || data || " - LOCATION :" || (locate self)$name || "\n"]
-  end dump
-end TestObject
-
-%================================
-
 const PCRFramework <- object PCRFramework
 	const here <- (locate self)
-  const replicasDirectory <- Directory.create
   var replicas : Array.of[ReplicaType] <- Array.of[ReplicaType].empty
 
 	% event handler for disconnecting/connecting nodes.
@@ -30,7 +17,7 @@ const PCRFramework <- object PCRFramework
 		end nodeDown
 	end NodeEventHandler
 
-	export operation replicate[X : ClonableType, numberRequiredReplicas: Integer] -> [retReplicas : Array.of[ReplicaType]]
+	export operation replicate[X : ClonableType, numberRequiredReplicas: Integer] -> [replicaSet : Array.of[ReplicaType]]
 		here$stdout.putstring["Trying to replicate over " || numberRequiredReplicas.asString || " nodes\n"]
 		loop
 			exit when (here.getActiveNodes.upperbound + 1) >= numberRequiredReplicas
@@ -40,26 +27,33 @@ const PCRFramework <- object PCRFramework
 			end
 		end loop
 
-    const objectTypeName <- (typeof X)$name
+    %const objectTypeName <- (typeof X)$name
     % if we already have replicas for objects of this type.
-    if replicasDirectory.lookup[objectTypeName] !== nil then
-       here$stdout.putstring["Already have replicas for: " || objectTypeName || "\n"]
-       replicas <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
-    end if
+    %if replicasDirectory.lookup[objectTypeName] !== nil then
+    %   here$stdout.putstring["Already have replicas for: " || objectTypeName || "\n"]
+    %   replicas <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
+    %end if
 
 		for i : Integer <- 0 while i <= here.getActiveNodes.upperbound by i <- i + 1
 			var clone : ClonableType <- X.clone
+      % add the primary replica in the first position of the array.
       if replicas.upperbound < 0 then
-        replicas.addUpper[PrimaryReplica.create[clone, numberRequiredReplicas]]
-        replicas[0].registerNode[here$activenodes[i]$thenode]
-        fix replicas[0] at here$activenodes[i]$thenode
+        const primary <- PrimaryReplica.create[clone, numberRequiredReplicas]
+        here$stdout.putstring["Created primary replica\n"]
+        primary.registerNode[here$activenodes[i]$thenode]
+        replicas.addUpper[primary]
+        fix primary at here$activenodes[i]$thenode
+        here$stdout.putstring["Fixed primary replica at " || here$activenodes[i]$thenode$name || "\n"]
       else
-        replicas.addUpper[GenericReplica.create[clone, replicas[0]]]
-        fix replicas[replicas.upperbound] at here$activenodes[i]$thenode
-        here$stdout.putstring["=================> DEBUG\n"]
+        const secondary <- GenericReplica.create[clone, replicas[0]]
+        here$stdout.putstring["Created secondary replica\n"]
+        replicas.addUpper[secondary]
+        fix secondary at here$activenodes[i]$thenode
+        replicas[0].registerNode[(locate secondary)]
+        here$stdout.putstring["Fixed secondary replica at " || here$activenodes[i]$thenode$name || "\n"]
       end if
 		end for
-    retReplicas <- replicas
+    replicaSet <- replicas
 	end replicate
 
 	initially
