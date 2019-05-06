@@ -1,8 +1,8 @@
 export GenericReplica
 
 const GenericReplica <- class GenericReplica[attached obj : ClonableType, primary: ReplicaType]
-  var home : Node <- locate self
-  
+  var home : Node
+
   export operation read -> [ret : ClonableType]
     ret <- obj
     unavailable
@@ -18,14 +18,6 @@ const GenericReplica <- class GenericReplica[attached obj : ClonableType, primar
     end unavailable
   end write
 
-  export operation registerNode[newUsedNode : Node]
-    % noop
-  end registerNode
-
-  export operation registerReplica[newReplica : ReplicaType]
-    % noop
-  end registerReplica
-
   export operation notify
     % noop
   end notify
@@ -37,10 +29,7 @@ const GenericReplica <- class GenericReplica[attached obj : ClonableType, primar
   end ping
 
   export operation dump
-    (locate self)$stdout.putstring["oi\n"]
+    (locate self)$stdout.putstring["\nGeneric replica at " || (locate self)$name || "\n"]
   end dump
 
-  initially
-    primary.registerReplica[self]
-  end initially
 end GenericReplica

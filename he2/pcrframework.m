@@ -3,6 +3,7 @@ export PCRFramework
 const PCRFramework <- object PCRFramework
 	const here <- (locate self)
   var replicas : Array.of[ReplicaType] <- Array.of[ReplicaType].empty
+	var replicasDirectory : Directory <- Directory.create
 
 	% event handler for disconnecting/connecting nodes.
 	const NodeEventHandler <- object NodeEventHandler
@@ -18,43 +19,54 @@ const PCRFramework <- object PCRFramework
 	end NodeEventHandler
 
 	export operation replicate[X : ClonableType, numberRequiredReplicas: Integer] -> [replicaSet : Array.of[ReplicaType]]
-		here$stdout.putstring["Trying to replicate over " || numberRequiredReplicas.asString || " nodes\n"]
 		loop
 			exit when (here.getActiveNodes.upperbound + 1) >= numberRequiredReplicas
 			begin
-				here$stdout.putstring["Not enough nodes to replicate the object over, waiting for more nodes to connect...\n"]
+				here$stdout.putstring["Not enough nodes to replicate the object over (" || numberRequiredReplicas.asString  || " required), waiting for more nodes to connect...\n"]
 				here.delay[Time.create[3, 0]]
 			end
 		end loop
 
-    %const objectTypeName <- (typeof X)$name
+    const objectTypeName <- (typeof X)$name
     % if we already have replicas for objects of this type.
-    %if replicasDirectory.lookup[objectTypeName] !== nil then
-    %   here$stdout.putstring["Already have replicas for: " || objectTypeName || "\n"]
-    %   replicas <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
-    %end if
+    if replicasDirectory.lookup[objectTypeName] !== nil then
+       here$stdout.putstring["Already have " || ((view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]).upperbound + 1).asString || " replicas for: " || objectTypeName || "\n"]
+       replicas <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
+	  else
+			 here$stdout.putstring["First time replicating: " || objectTypeName || "\n"]
+		   replicasDirectory.insert[objectTypeName, Array.of[ReplicaType].empty]
+    end if
 
-		for i : Integer <- 0 while i <= here.getActiveNodes.upperbound by i <- i + 1
+		for i : Integer <- 0 while i < numberRequiredReplicas by i <- i + 1
 			var clone : ClonableType <- X.clone
       % add the primary replica in the first position of the array.
       if replicas.upperbound < 0 then
         const primary <- PrimaryReplica.create[clone, numberRequiredReplicas]
         here$stdout.putstring["Created primary replica\n"]
-        primary.registerNode[here$activenodes[i]$thenode]
         replicas.addUpper[primary]
         fix primary at here$activenodes[i]$thenode
         here$stdout.putstring["Fixed primary replica at " || here$activenodes[i]$thenode$name || "\n"]
       else
-        const secondary <- GenericReplica.create[clone, replicas[0]]
-        here$stdout.putstring["Created secondary replica\n"]
-        replicas.addUpper[secondary]
-        fix secondary at here$activenodes[i]$thenode
-        replicas[0].registerNode[(locate secondary)]
-        here$stdout.putstring["Fixed secondary replica at " || here$activenodes[i]$thenode$name || "\n"]
+        const generic <- GenericReplica.create[clone, replicas[0]]
+        here$stdout.putstring["Created generic replica\n"]
+        replicas.addUpper[generic]
+        fix generic at here$activenodes[i]$thenode
+        here$stdout.putstring["Fixed generic replica at " || here$activenodes[i]$thenode$name || "\n"]
       end if
 		end for
+		replicasDirectory.insert[objectTypeName, replicas]
     replicaSet <- replicas
 	end replicate
+
+	export operation dump
+		const replicaTypes <- replicasDirectory.list
+		for i : Integer <- 0 while i <= replicaTypes.upperbound by i <- i + 1
+		   const objReplicas <- view replicasDirectory.lookup[replicaTypes[i]] as Array.of[ReplicaType]
+			 for j : Integer <- 0 while j <= objReplicas.upperbound by j <- j + 1
+			 		  objReplicas[j].dump
+			 end for
+		end for
+	end dump
 
 	initially
 		here.setNodeEventHandler[NodeEventHandler]

@@ -4,8 +4,6 @@ export ClonableType
 const ReplicaType <- typeobject ReplicaType
   operation read -> [o : ClonableType]
   operation write[o : ClonableType]
-  operation registerNode[newUsedNode : Node]
-  operation registerReplica[newReplica : ReplicaType]
   operation ping
   operation notify
   operation dump

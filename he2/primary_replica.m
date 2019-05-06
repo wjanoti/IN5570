@@ -1,9 +1,8 @@
 export PrimaryReplica
 
 const PrimaryReplica <- class PrimaryReplica[attached obj : ClonableType, numberRequiredReplicas: Integer]
-  var secondaryReplicas : Array.of[ReplicaType] <- Array.of[ReplicaType].empty
   var nodes : Array.of[Node] <- Array.of[Node].empty
-  var home : Node <- locate self
+  var home : Node
 
   export operation read -> [ret : ClonableType]
     ret <- obj
@@ -20,14 +19,6 @@ const PrimaryReplica <- class PrimaryReplica[attached obj : ClonableType, number
     end unavailable
   end write
 
-  export operation registerNode[newUsedNode : Node]
-    nodes.addUpper[newUsedNode]
-  end registerNode
-
-  export operation registerReplica[newReplica : ReplicaType]
-    secondaryReplicas.addUpper[newReplica]
-  end registerReplica
-
   export operation ping
     unavailable
       home$stdout.putstring["Unavailable primary replica\n"]
@@ -40,18 +31,6 @@ const PrimaryReplica <- class PrimaryReplica[attached obj : ClonableType, number
   end notify
 
   export operation dump
-     for i : Integer <- 0 while i <= secondaryReplicas.upperbound by i <- i + 1
-        secondaryReplicas[i].dump
-     end for
-      %var nodesNames : String <- ""
-      %for i : Integer <- 0 while i <= nodes.upperbound by i <- i + 1
-    %    nodesNames <- nodesNames || nodes[i]$name || " - "
-    %  end for
-    %  home$stdout.putstring["REPLICA INFO: \n - TYPE " || (typeof self)$name ||
-    %                        " \n - NUMBER OF SECONDARY REPLICAS: " || (secondaryReplicas.upperbound + 1).asstring ||
-    %                        " \n - NUMBER OF NODES:" || (nodes.upperbound + 1).asString ||
-    %                        " \n - NODES: " || nodesNames || "\n"
-    %                        ]
-     %obj.dump
+    (locate self)$stdout.putstring["\nPrimary replica at " || (locate self)$name || "\n"]
   end dump
 end PrimaryReplica
