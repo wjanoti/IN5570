@@ -14,6 +14,7 @@ const PrimaryReplica <- class PrimaryReplica[attached obj : ClonableType, number
   export operation write[newObj : ClonableType]
     obj <- newObj
     %notify
+    %must make sure that all replicas update their status before any new updates to the primary copy should happen.
     unavailable
       home$stdout.putstring["Unavailable primary replica\n"]
     end unavailable

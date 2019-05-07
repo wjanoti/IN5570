@@ -6,7 +6,7 @@ const GenericReplica <- class GenericReplica[attached obj : ClonableType, primar
   export operation read -> [ret : ClonableType]
     ret <- obj
     unavailable
-      home$stdout.putstring["Unavailable primary replica\n"]
+      home$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end read
 
@@ -14,7 +14,7 @@ const GenericReplica <- class GenericReplica[attached obj : ClonableType, primar
     % delegate to primary
     %notify
     unavailable
-      home$stdout.putstring["Unavailable primary replica\n"]
+      home$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end write
 
@@ -24,7 +24,7 @@ const GenericReplica <- class GenericReplica[attached obj : ClonableType, primar
 
   export operation ping
     unavailable
-      home$stdout.putstring["Unavailable primary replica\n"]
+      home$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end ping
 

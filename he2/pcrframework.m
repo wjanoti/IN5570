@@ -8,6 +8,7 @@ const PCRFramework <- object PCRFramework
 	% event handler for disconnecting/connecting nodes.
 	const NodeEventHandler <- object NodeEventHandler
 		export operation nodeUp[ n : Node, t : Time ]
+		  % recheck replicas policies and see if we can fulfill some 
 			here$stdout.putstring["Node connected. " || (here.getActiveNodes.upperbound + 1).asString || " node(s) running.\n"]
 		end nodeUp
 
@@ -19,6 +20,7 @@ const PCRFramework <- object PCRFramework
 	end NodeEventHandler
 
 	export operation replicate[X : ClonableType, numberRequiredReplicas: Integer] -> [replicaSet : Array.of[ReplicaType]]
+		const objectTypeName <- (typeof X)$name
 		loop
 			exit when (here.getActiveNodes.upperbound + 1) >= numberRequiredReplicas
 			begin
@@ -27,41 +29,64 @@ const PCRFramework <- object PCRFramework
 			end
 		end loop
 
-    const objectTypeName <- (typeof X)$name
     % if we already have replicas for objects of this type.
     if replicasDirectory.lookup[objectTypeName] !== nil then
-       here$stdout.putstring["Already have " || ((view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]).upperbound + 1).asString || " replicas for: " || objectTypeName || "\n"]
+       here$stdout.putstring["\nAlready have " || ((view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]).upperbound + 1).asString || " replicas for: " || objectTypeName || "\n"]
        replicas <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
 	  else
-			 here$stdout.putstring["First time replicating: " || objectTypeName || "\n"]
+			 here$stdout.putstring["\nFirst time replicating: " || objectTypeName || "\n"]
 		   replicasDirectory.insert[objectTypeName, Array.of[ReplicaType].empty]
     end if
 
 		for i : Integer <- 0 while i < numberRequiredReplicas by i <- i + 1
 			var clone : ClonableType <- X.clone
-      % add the primary replica in the first position of the array.
+			var replica : ReplicaType
       if replicas.upperbound < 0 then
-        const primary <- PrimaryReplica.create[clone, numberRequiredReplicas]
-        here$stdout.putstring["Created primary replica\n"]
-        replicas.addUpper[primary]
-        fix primary at here$activenodes[i]$thenode
-        here$stdout.putstring["Fixed primary replica at " || here$activenodes[i]$thenode$name || "\n"]
+				% add the primary replica in the first position of the array
+        replica <- PrimaryReplica.create[clone, numberRequiredReplicas]
+        here$stdout.putstring["\nCreated primary replica\n"]
       else
-        const generic <- GenericReplica.create[clone, replicas[0]]
-        here$stdout.putstring["Created generic replica\n"]
-        replicas.addUpper[generic]
-        fix generic at here$activenodes[i]$thenode
-        here$stdout.putstring["Fixed generic replica at " || here$activenodes[i]$thenode$name || "\n"]
+        replica <- GenericReplica.create[clone, replicas[0]]
+        here$stdout.putstring["\nCreated generic replica\n"]
       end if
+
+			% try to fix the replica in an available node that doesn't already have an replica of that object
+			% this might not replicate the number of replicas requested due to the requirements, but will try on each available node.
+			for j : Integer <- 0 while j < here$activenodes.upperbound by j <- j + 1
+				if self.nodeHasReplica[here$activenodes[j]$thenode, objectTypeName] == True then
+					here$stdout.putstring["\nThere is already a replica of type " || objectTypeName || " in this node : " || here$activenodes[j]$thenode$name || "\n"]
+				else
+					replicas.addUpper[replica]
+					fix replica at here$activenodes[i]$thenode
+					here$stdout.putstring["\nFixed replica at " || here$activenodes[i]$thenode$name || "\n"]
+				end if
+			end for
+
 		end for
 		replicasDirectory.insert[objectTypeName, replicas]
     replicaSet <- replicas
 	end replicate
 
+  operation nodeHasReplica [currentNode: Node, objectTypeName: String] -> [ret : Boolean]
+		const replicaList <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
+		for i : Integer <- 0 while i <= replicaList.upperbound by i <- i + 1
+			 if currentNode == (locate replicaList[i]) then
+			 		ret <- True
+					return
+       end if
+		end for
+		ret <- False
+	end nodeHasReplica
+
+	% rearrange replicas when a node goes down
+  operation redistributeReplicas
+	end redistributeReplicas
+
 	export operation dump
 		const replicaTypes <- replicasDirectory.list
 		for i : Integer <- 0 while i <= replicaTypes.upperbound by i <- i + 1
 		   const objReplicas <- view replicasDirectory.lookup[replicaTypes[i]] as Array.of[ReplicaType]
+			 here$stdout.putstring["\nFramework has " || (objReplicas.upperbound + 1).asString || " replicas of " || (typeof objReplicas[i])$name || "\n"]
 			 for j : Integer <- 0 while j <= objReplicas.upperbound by j <- j + 1
 			 		  objReplicas[j].dump
 			 end for
