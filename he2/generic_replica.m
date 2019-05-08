@@ -12,6 +12,8 @@ const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, pr
 
   export operation write[newReplicatedObject : ClonableType]
     (locate self)$stdout.putstring["Writing on a generic replica\n"]
+    const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
+    primaryReplica.write[newReplicatedObject]
     unavailable
       (locate self)$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
@@ -20,7 +22,6 @@ const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, pr
   export operation notify
     const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
     (locate self)$stdout.putstring["Replica at " || (locate self)$name || " notified\n" ]
-    (locate self)$stdout.putstring[(locate primaryReplica)$name || "\n" ]
     replicatedObject <- primaryReplica.read
   end notify
 

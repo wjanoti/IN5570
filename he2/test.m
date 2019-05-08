@@ -5,8 +5,7 @@ const test <- object test
       stdout.putstring[replicas.upperbound.asString || "\n"]
       const testObjReplica <- replicas[0].read
       testObjReplica.setData["Changed"]
-      replicas[0].write[testObjReplica]
-      replicas[0].write[testObjReplica]
+      replicas[1].write[testObjReplica]
       for i : Integer <- 0 while i <= replicas.upperbound by i <- i + 1
          replicas[i].read.getData
       end for
