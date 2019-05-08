@@ -1,30 +1,32 @@
 export GenericReplica
 
-const GenericReplica <- class GenericReplica[attached obj : ClonableType, primary: ReplicaType]
+const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, primary: ReplicaType, framework: PCRType]
   var home : Node
 
   export operation read -> [ret : ClonableType]
-    ret <- obj
+    ret <- replicatedObject
     unavailable
-      home$stdout.putstring["Unavailable generic replica\n"]
+      (locate self)$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end read
 
-  export operation write[newObj : ClonableType]
-    % delegate to primary
-    %notify
+  export operation write[newReplicatedObject : ClonableType]
+    (locate self)$stdout.putstring["Writing on a generic replica\n"]
     unavailable
-      home$stdout.putstring["Unavailable generic replica\n"]
+      (locate self)$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end write
 
   export operation notify
-    % noop
+    const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
+    (locate self)$stdout.putstring["Replica at " || (locate self)$name || " notified\n" ]
+    (locate self)$stdout.putstring[(locate primaryReplica)$name || "\n" ]
+    replicatedObject <- primaryReplica.read
   end notify
 
   export operation ping
     unavailable
-      home$stdout.putstring["Unavailable generic replica\n"]
+      (locate self)$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end ping
 

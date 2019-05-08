@@ -43,10 +43,10 @@ const PCRFramework <- object PCRFramework
 			var replica : ReplicaType
       if replicas.upperbound < 0 then
 				% add the primary replica in the first position of the array
-        replica <- PrimaryReplica.create[clone, numberRequiredReplicas]
+        replica <- PrimaryReplica.create[clone, numberRequiredReplicas, PCRFramework]
         here$stdout.putstring["\nCreated primary replica\n"]
       else
-        replica <- GenericReplica.create[clone, replicas[0]]
+        replica <- GenericReplica.create[clone, replicas[0], PCRFramework]
         here$stdout.putstring["\nCreated generic replica\n"]
       end if
 
@@ -54,11 +54,12 @@ const PCRFramework <- object PCRFramework
 			% this might not replicate the number of replicas requested due to the requirements, but will try on each available node.
 			for j : Integer <- 0 while j < here$activenodes.upperbound by j <- j + 1
 				if self.nodeHasReplica[here$activenodes[j]$thenode, objectTypeName] == True then
-					here$stdout.putstring["\nThere is already a replica of type " || objectTypeName || " in this node : " || here$activenodes[j]$thenode$name || "\n"]
+					here$stdout.putstring["\nThere is already a replica of type " || objectTypeName || " in this node: " || here$activenodes[j]$thenode$name || "\n"]
 				else
 					replicas.addUpper[replica]
 					fix replica at here$activenodes[i]$thenode
 					here$stdout.putstring["\nFixed replica at " || here$activenodes[i]$thenode$name || "\n"]
+					exit
 				end if
 			end for
 
@@ -66,6 +67,15 @@ const PCRFramework <- object PCRFramework
 		replicasDirectory.insert[objectTypeName, replicas]
     replicaSet <- replicas
 	end replicate
+
+  export operation getGenericReplicas[objectTypeName : String] -> [ret : Array.of[ReplicaType]]
+	   ret <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
+	end getGenericReplicas
+
+	export operation getPrimaryReplica[objectTypeName : String] -> [ret : ReplicaType]
+		 const replicaList <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]
+		 ret <- replicaList[0]
+	end getPrimaryReplica
 
   operation nodeHasReplica [currentNode: Node, objectTypeName: String] -> [ret : Boolean]
 		const replicaList <- view replicasDirectory.lookup[objectTypeName] as Array.of[ReplicaType]

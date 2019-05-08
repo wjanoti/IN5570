@@ -1,5 +1,6 @@
 export ReplicaType
 export ClonableType
+export PCRType
 
 const ReplicaType <- typeobject ReplicaType
   operation read -> [o : ClonableType]
@@ -11,5 +12,13 @@ end ReplicaType
 
 const ClonableType <- typeobject ClonableType
   operation clone -> [o : ClonableType]
-  operation dump
+  operation getData
+  operation setData[newData: String]
 end ClonableType
+
+const PCRType <- typeobject PCRType
+  operation replicate[X : ClonableType, N : Integer]
+  operation getGenericReplicas[objectTypeName : String] -> [ret : Array.of[ReplicaType]]
+  operation getPrimaryReplica[objectTypeName : String] -> [ret : ReplicaType]
+  operation dump
+end PCRType
