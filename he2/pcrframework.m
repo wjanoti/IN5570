@@ -8,7 +8,7 @@ const PCRFramework <- object PCRFramework
 	% event handler for disconnecting/connecting nodes.
 	const NodeEventHandler <- object NodeEventHandler
 		export operation nodeUp[ n : Node, t : Time ]
-		  % recheck replicas policies and see if we can fulfill some 
+		  % recheck replicas policies and see if we can fulfill some
 			here$stdout.putstring["Node connected. " || (here.getActiveNodes.upperbound + 1).asString || " node(s) running.\n"]
 		end nodeUp
 
