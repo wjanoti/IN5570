@@ -19,16 +19,19 @@ const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, pr
     end unavailable
   end write
 
+  % called by a primary replica
   export operation notify
-    const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
     (locate self)$stdout.putstring["Replica at " || (locate self)$name || " notified\n" ]
+    const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
     replicatedObject <- primaryReplica.read
+    unavailable
+      (locate self)$stdout.putstring["Unavailable generic replica\n"]
+      % remove from framework
+    end unavailable
   end notify
 
   export operation ping
-    unavailable
-      (locate self)$stdout.putstring["Unavailable generic replica\n"]
-    end unavailable
+     % noop
   end ping
 
   export operation dump

@@ -7,7 +7,7 @@ const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredR
   export operation read -> [ret : ClonableType]
     ret <- obj
     unavailable
-      (locate self)$stdout.putstring["Unavailable primary replica\n"]
+      (locate self)$stdout.putstring["Primary replica unavailable\n"]
     end unavailable
   end read
 
@@ -29,16 +29,14 @@ const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredR
        (locate self)$stdout.putstring["Pending notifications " || (pendingUpdates.asString) || "\n"]
     end for
 
-    %must make sure that all replicas update their status before any new updates to the primary copy should happen.
     unavailable
-      (locate self)$stdout.putstring["Unavailable primary replica\n"]
+      (locate self)$stdout.putstring["Primary replica unavailable\n"]
+      % elect a new one
     end unavailable
   end write
 
   export operation ping
-    unavailable
-      (locate self)$stdout.putstring["Unavailable primary replica\n"]
-    end unavailable
+    % noop
   end ping
 
   export operation notify
