@@ -18,6 +18,7 @@ end ClonableType
 
 const PCRType <- typeobject PCRType
   operation replicate[X : ClonableType, N : Integer]
+  operation redistributeReplicas
   operation getGenericReplicas[objectTypeName : String] -> [ret : Array.of[ReplicaType]]
   operation getPrimaryReplica[objectTypeName : String] -> [ret : ReplicaType]
   operation dump

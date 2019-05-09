@@ -5,22 +5,6 @@ const PCRFramework <- object PCRFramework
   var replicas : Array.of[ReplicaType]
 	var replicasDirectory : Directory <- Directory.create
 
-	% event handler for disconnecting/connecting nodes.
-	const NodeEventHandler <- object NodeEventHandler
-		export operation nodeUp[ n : Node, t : Time ]
-		  % recheck replicas policies and see if we can fulfill some
-			here$stdout.putstring["Node connected. " || (here.getActiveNodes.upperbound + 1).asString || " node(s) running.\n"]
-		end nodeUp
-
-		export operation nodeDown[ n : Node, t : Time ]
-			here$stdout.putstring["Node disconnected. " || (here.getActiveNodes.upperbound + 1).asString || " node(s) running.\n"]
-			% redistribute replicas when a node goes down
-			here$stdout.putstring["Redistributing replicas... \n"]
-			% this is not working for some reason
-			%PCRFramework.redistributeReplicas
-		end nodeDown
-	end NodeEventHandler
-
 	export operation replicate[X : ClonableType, numberRequiredReplicas: Integer] -> [replicaSet : Array.of[ReplicaType]]
 		const objectTypeName <- (typeof X)$name
 		loop
@@ -99,14 +83,16 @@ const PCRFramework <- object PCRFramework
 
 	% rearrange replicas when a node goes down
   export operation redistributeReplicas
+	here$stdout.putstring["Redistributing replicas... \n"]
+
 		const replicaTypes <- replicasDirectory.list
 		for i : Integer <- 0 while i <= replicaTypes.upperbound by i <- i + 1
 			const replicaList <- view replicasDirectory.lookup[replicaTypes[i]] as Array.of[ReplicaType]
-			for j : Integer <- 0 while j <= replicaList.upperbound by j <- j + 1
+		 	for j : Integer <- 0 while j <= replicaList.upperbound by j <- j + 1
 				begin
 				  replicaList[j].ping
 					unavailable
-						 if j = 0 then
+						 if j == 0 then
 						 	here$stdout.putstring["\nA primary replica has been lost\n"]
 						 end if
 					end unavailable
@@ -127,7 +113,7 @@ const PCRFramework <- object PCRFramework
 	end dump
 
 	initially
-		here.setNodeEventHandler[NodeEventHandler]
+		here.setNodeEventHandler[NodeEventHandler.create[self]]
 	end initially
 
 end PCRFramework
