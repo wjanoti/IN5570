@@ -8,6 +8,7 @@ const ReplicaType <- typeobject ReplicaType
   operation ping
   operation notify
   operation dump
+  operation getNumberRequiredReplicas -> [ ret : Integer ]
 end ReplicaType
 
 const ClonableType <- typeobject ClonableType

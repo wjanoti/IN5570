@@ -3,7 +3,7 @@ export PrimaryReplica
 const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredReplicas: Integer, framework: PCRType]
 
   var pendingUpdates : Integer <- 0
-
+  
   export operation read -> [ret : ClonableType]
     ret <- obj
     unavailable
@@ -46,5 +46,9 @@ const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredR
   export operation dump
     (locate self)$stdout.putstring["\nPrimary replica at " || (locate self)$name || "\n"]
   end dump
+
+  export operation getNumberRequiredReplicas -> [ ret : Integer ]
+    ret <- numberRequiredReplicas
+  end getNumberRequiredReplicas
 
 end PrimaryReplica

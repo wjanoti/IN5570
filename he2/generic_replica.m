@@ -2,6 +2,7 @@ export GenericReplica
 
 const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, primary: ReplicaType, framework: PCRType]
   var home : Node
+  var numberRequiredReplicas : Integer <- primary.getNumberRequiredReplicas
 
   export operation read -> [ret : ClonableType]
     ret <- replicatedObject
@@ -37,5 +38,9 @@ const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, pr
   export operation dump
     (locate self)$stdout.putstring["\nGeneric replica at " || (locate self)$name || "\n"]
   end dump
+
+  export operation getNumberRequiredReplicas -> [ ret : Integer ]
+    ret <- numberRequiredReplicas
+  end getNumberRequiredReplicas
 
 end GenericReplica
