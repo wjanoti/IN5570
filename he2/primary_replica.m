@@ -2,36 +2,35 @@ export PrimaryReplica
 
 const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredReplicas: Integer, framework: PCRType]
 
+  var home : Node <- locate self
+
+  % number of generic replicas left to notify after a write
   var pendingUpdates : Integer <- 0
-  
+
+  % gets the object wrapped in this replica
   export operation read -> [ret : ClonableType]
     ret <- obj
     unavailable
-      (locate self)$stdout.putstring["Primary replica unavailable\n"]
+      home$stdout.putstring["Primary replica unavailable\n"]
     end unavailable
   end read
 
+  % updates the object wrapped in this replica and notifies generic replicas.
   export operation write[newObj : ClonableType]
     if pendingUpdates > 0 then
       loop
-        (locate self)$stdout.putstring[pendingUpdates.asString || " updates pending...\n"]
+        home$stdout.putstring[pendingUpdates.asString || " updates pending...\n"]
         exit when pendingUpdates == 0
       end loop
     end if
-    (locate self)$stdout.putstring["Writing on a primary replica\n"]
+
+    home$stdout.putstring["Writing on a primary replica\n"]
     obj <- newObj
-    const replicas <- framework.getGenericReplicas[(typeof newObj)$name]
-    pendingUpdates <- replicas.upperbound
-    (locate self)$stdout.putstring["Notifying " || (replicas.upperbound.asString) || " replicas \n"]
-    for i : Integer <- 1 while i <= replicas.upperbound by i <- i + 1
-       replicas[i].notify
-       pendingUpdates <- pendingUpdates - 1
-       (locate self)$stdout.putstring["Pending notifications " || (pendingUpdates.asString) || "\n"]
-    end for
+
+    self.notify
 
     unavailable
-      (locate self)$stdout.putstring["Primary replica unavailable\n"]
-      % elect a new one
+      home$stdout.putstring["Primary replica unavailable\n"]
     end unavailable
   end write
 
@@ -39,16 +38,26 @@ const PrimaryReplica <- class PrimaryReplica[obj : ClonableType, numberRequiredR
     % noop
   end ping
 
+  % notify generic replicas to update
   export operation notify
-    % noop
+    const replicas <- framework.getReplicas[(typeof obj)$name]
+    pendingUpdates <- replicas.upperbound
+    home$stdout.putstring["Notifying " || (replicas.upperbound.asString) || " replicas \n"]
+    % starts from 1 because the primary replica is always in the first position (0) in the replica array.
+    for i : Integer <- 1 while i <= replicas.upperbound by i <- i + 1
+      replicas[i].notify
+      pendingUpdates <- pendingUpdates - 1
+      home$stdout.putstring["Pending notifications " || (pendingUpdates.asString) || "\n"]
+    end for
   end notify
-
-  export operation dump
-    (locate self)$stdout.putstring["\nPrimary replica at " || (locate self)$name || "\n"]
-  end dump
 
   export operation getNumberRequiredReplicas -> [ ret : Integer ]
     ret <- numberRequiredReplicas
   end getNumberRequiredReplicas
+
+  % debug
+  export operation dump
+    home$stdout.putstring["\n" || (typeof self)$name || " at " || home$name || "\n"]
+  end dump
 
 end PrimaryReplica

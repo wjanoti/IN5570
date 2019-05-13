@@ -2,6 +2,7 @@ export ReplicaType
 export ClonableType
 export PCRType
 
+% type for both PrimaryReplica and GenericReplica
 const ReplicaType <- typeobject ReplicaType
   operation read -> [o : ClonableType]
   operation write[o : ClonableType]
@@ -11,16 +12,19 @@ const ReplicaType <- typeobject ReplicaType
   operation getNumberRequiredReplicas -> [ ret : Integer ]
 end ReplicaType
 
+% type to be conformed by objects cloned by the framework
 const ClonableType <- typeobject ClonableType
   operation clone -> [o : ClonableType]
   operation getData
   operation setData[newData: String]
 end ClonableType
 
+% framework type
 const PCRType <- typeobject PCRType
   operation replicate[X : ClonableType, N : Integer]
-  operation redistributeReplicas
-  operation getGenericReplicas[objectTypeName : String] -> [ret : Array.of[ReplicaType]]
+  operation redistributeReplicasNodeDown
+  operation redistributeReplicasNodeUp
+  operation getReplicas[objectTypeName : String] -> [ret : Array.of[ReplicaType]]
   operation getPrimaryReplica[objectTypeName : String] -> [ret : ReplicaType]
   operation dump
 end PCRType

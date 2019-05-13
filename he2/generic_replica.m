@@ -1,46 +1,32 @@
 export GenericReplica
 
-const GenericReplica <- class GenericReplica[replicatedObject : ClonableType, primary: ReplicaType, framework: PCRType]
-  var home : Node
-  var numberRequiredReplicas : Integer <- primary.getNumberRequiredReplicas
+const GenericReplica <- class GenericReplica (PrimaryReplica) [primary: ReplicaType]
 
   export operation read -> [ret : ClonableType]
-    ret <- replicatedObject
+    ret <- obj
     unavailable
-      (locate self)$stdout.putstring["Unavailable generic replica\n"]
+      home$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end read
 
-  export operation write[newReplicatedObject : ClonableType]
-    (locate self)$stdout.putstring["Writing on a generic replica\n"]
-    const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
-    primaryReplica.write[newReplicatedObject]
+  % delegates the write operation to its primary replica.
+  export operation write[newobj : ClonableType]
+    home$stdout.putstring["Writing on a generic replica\n"]
+    const primaryReplica <- framework.getPrimaryReplica[(typeof obj)$name]
+    primaryReplica.write[newobj]
     unavailable
-      (locate self)$stdout.putstring["Unavailable generic replica\n"]
+      home$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end write
 
-  % called by a primary replica
+  % called by a primary replica when a write happens on them
   export operation notify
-    (locate self)$stdout.putstring["Replica at " || (locate self)$name || " notified\n" ]
-    const primaryReplica <- framework.getPrimaryReplica[(typeof replicatedObject)$name]
-    replicatedObject <- primaryReplica.read
+    home$stdout.putstring["Replica at " || home$name || " notified\n" ]
+    const primaryReplica <- framework.getPrimaryReplica[(typeof obj)$name]
+    obj <- primaryReplica.read
     unavailable
-      (locate self)$stdout.putstring["Unavailable generic replica\n"]
-      % remove from framework
+      home$stdout.putstring["Unavailable generic replica\n"]
     end unavailable
   end notify
-
-  export operation ping
-     % noop
-  end ping
-
-  export operation dump
-    (locate self)$stdout.putstring["\nGeneric replica at " || (locate self)$name || "\n"]
-  end dump
-
-  export operation getNumberRequiredReplicas -> [ ret : Integer ]
-    ret <- numberRequiredReplicas
-  end getNumberRequiredReplicas
 
 end GenericReplica
