@@ -15,8 +15,6 @@ end ReplicaType
 % type to be conformed by objects cloned by the framework
 const ClonableType <- typeobject ClonableType
   operation clone -> [o : ClonableType]
-  operation getData
-  operation setData[newData: String]
 end ClonableType
 
 % framework type
