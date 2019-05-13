@@ -1,0 +1,39 @@
+diku_IN5570@planetlab1.xeno.cl.cam.ac.uk $ make run_timeserver_planetlab
+emx32 -R typedefs.x time_server.x primary_replica.x generic_replica.x  node_event_handler.x pcrframework.x time_server_test.x
+Emerald listening on port 30435 76e3, epoch 1887 75f
+Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
+Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
+Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
+Node connected. 2 node(s) running.
+Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
+Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
+Node connected. 3 node(s) running.
+
+TimeServer replica at mars.planetlab.haw-hamburg.de
+1557771648:392187
+
+TimeServer replica at cse-white.cse.chalmers.se
+1557771648:484680
+
+% this is shown when we tried to write using a generic replica
+Writing on a generic replica
+
+% delegated to primary
+Writing on a primary replica
+
+% primary notified its generic to update
+Notifying 1 replicas
+Replica at planetlab1.xeno.cl.cam.ac.uk notified
+Pending notifications 0
+
+TimeServer replica at mars.planetlab.haw-hamburg.de
+1557771648:392441
+
+TimeServer replica at cse-white.cse.chalmers.se
+1557771648:484869
+
+Framework has 2 replicas of atimeservertype
+
+ - aprimaryreplicatype @ mars.planetlab.haw-hamburg.de
+
+ - agenericreplicatype @ cse-white.cse.chalmers.se
