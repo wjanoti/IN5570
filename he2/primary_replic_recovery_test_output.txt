@@ -1,0 +1,24 @@
+diku_IN5570@planetlab1.xeno.cl.cam.ac.uk $ make run_nameserver_planetlab
+
+....PART OF THE OUTPUT OMITTED
+
+Node connected. 4 node(s) running.
+
+COMMENT ->   primary replica on mars.planetlab.haw-hamburg.de
+Framework has 2 replicas of anameservertype
+
+ - aprimaryreplicatype @ mars.planetlab.haw-hamburg.de
+
+ - agenericreplicatype @ merkur.planetlab.haw-hamburg.de
+
+COMMENT ->  killed primary replica node
+Node disconnected. 3 node(s) running.
+
+A primary replica has been lost
+
+COMMENT ->  new primary replica on cse-white.cse.chalmers.se
+Framework has 2 replicas of anameservertype
+
+ - aprimaryreplicatype @ cse-white.cse.chalmers.se
+
+ - agenericreplicatype @ merkur.planetlab.haw-hamburg.de
