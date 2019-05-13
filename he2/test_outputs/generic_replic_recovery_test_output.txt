@@ -1,35 +1,8 @@
 diku_IN5570@planetlab1.xeno.cl.cam.ac.uk $ make run_nameserver_planetlab
 emx32 -R typedefs.x name_server.x primary_replica.x generic_replica.x  node_event_handler.x pcrframework.x name_server_test.x
 Emerald listening on port 30435 76e3, epoch 59438 e82e
-Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
-Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
-Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
-Node connected. 2 node(s) running.
-Not enough nodes to replicate the object over (3 required), waiting for more nodes to connect...
-Node connected. 3 node(s) running.
 
-Nameserver replica at mars.planetlab.haw-hamburg.de
-A -> 1
-B -> 2
-
-Nameserver replica at cse-white.cse.chalmers.se
-A -> 1
-B -> 2
-Writing on a generic replica
-Writing on a primary replica
-Notifying 1 replicas
-Replica at planetlab1.xeno.cl.cam.ac.uk notified
-Pending notifications 0
-
-Nameserver replica at mars.planetlab.haw-hamburg.de
-A -> 1
-B -> 2
-C -> 3
-
-Nameserver replica at cse-white.cse.chalmers.se
-A -> 1
-B -> 2
-C -> 3
+....PART OF THE OUTPUT OMITTED
 
 Framework has 2 replicas of anameservertype
 
